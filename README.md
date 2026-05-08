@@ -5,6 +5,8 @@ Aplicación **Seller** del [Proyecto IAW 2026](https://iaw-2026.github.io/proyec
 
 Esta app corresponde al rol del vendedor en los proyectos de tipo **B (Delivery)** y **C (Marketplace)**.
 
+[Link del deploy de Vercel](https://proyecto-c-seller-perfume-libre.vercel.app)
+
 ---
 
 Enunciado completo: <https://iaw-2026.github.io/proyecto/>

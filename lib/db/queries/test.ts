@@ -1,4 +1,4 @@
-import { sql } from '../db';
+import { sql } from './connect';
 
 export async function putComment(comment: string)
 {

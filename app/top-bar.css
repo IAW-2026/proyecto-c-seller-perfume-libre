@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+.topBar {
+    display: flex;
+    background-color: var(--color-slate-400);
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 10px;
+    border-color: var(--color-slate-700);
+    border-bottom-width: 4px;
+}
+
+.topBarText {
+    font-size: x-large;
+}
+
+.topBar-publicar-producto {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--color-slate-100);
+    color: black;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-width: 2px;
+    border-color: var(--color-slate-700);
+}
+
+.topBar-publicar-producto:hover {
+    background-color: var(--color-slate-600);
+    color: white; 
+}

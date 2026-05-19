@@ -3,3 +3,4 @@
 */
 
 export { putComment, getComments } from './queries/test';
+export { ObtenerMisProductos } from './queries/mis-productos';

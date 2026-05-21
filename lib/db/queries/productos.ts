@@ -1,18 +1,22 @@
-import { sql } from './connect'; 
+import 'server-only'
+
+import { setTimeout } from 'timers/promises';  
+import { Producto } from '../schemes';
+import { sql } from './connect'
 
 const productos: Producto[] = [
     {
         id: 0,
         stock: 10,
         titulo: "Aqua Di La Cotorre",
-        precio: 25000,
+        precio: 25000.35,
         imagen: "/1.png"
     },
     {
         id: 1,
         stock: 5,
         titulo: "Milanel Aura Pura",
-        precio: 15000,
+        precio: 15000.1,
         imagen: "/2.png"
     },
     {
@@ -46,17 +50,14 @@ const productos: Producto[] = [
 
 ];
 
-export interface Producto {
-    id: number;
-    stock: number;
-    titulo: string;
-    precio: number;
-    imagen: string;
-}
-
-// delay para mostrar el skeleton
-import { setTimeout } from 'timers/promises';   
-export async function ObtenerMisProductos(userId: string): Promise<Producto[]> {
+// delay para mostrar el skeleton 
+export async function ObtenerMisProductosQuery(userId: string): Promise<Producto[]> {
     await setTimeout(2000);
     return productos;
+} 
+
+export function EditarProductoQuery(id: number, titulo: string, precio: number, agregarStock: number) { 
+    productos[id].titulo = titulo;
+    productos[id].precio = precio;
+    productos[id].stock += agregarStock;
 }

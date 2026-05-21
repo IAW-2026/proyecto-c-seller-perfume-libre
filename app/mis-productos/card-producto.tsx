@@ -1,18 +1,15 @@
 'use client'
 
-import { Producto } from '@/lib/db/queries/mis-productos';
+import { Producto } from '@/lib/db/db';
 import Image from 'next/image';
 import "./mis-productos.css";
 
 interface Props {
     producto: Producto;
+    onEditar: (producto: Producto) => void;
 }
 
-function editarProducto(id: number) {
-    console.log(`editar ${id}`);
-}
-
-export default function CardProducto({ producto }: Props) {
+export default function CardProducto({ producto, onEditar }: Props) {
     return (
         <div className="card-producto"> 
             <div className="card-producto-contenedor-imagen">
@@ -20,7 +17,7 @@ export default function CardProducto({ producto }: Props) {
                     src={producto.imagen}
                     alt={producto.titulo}
                     fill
-                    className="card-producto-imagen"
+                    className="modal-producto-imagen"
                     sizes="(max-width: 200px) 100vw, (max-width: 200px) 50vw"
                     loading="eager">
                 </Image>
@@ -37,8 +34,8 @@ export default function CardProducto({ producto }: Props) {
             </div>
 
             <button
-                className="card-producto-editar"
-                onClick={ () => editarProducto(producto.id) }
+                className="card-producto-boton"  
+                onClick={() => onEditar(producto)}
             >
                 Editar
             </button>

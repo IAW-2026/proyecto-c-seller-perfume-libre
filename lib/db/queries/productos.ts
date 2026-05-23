@@ -61,3 +61,8 @@ export function EditarProductoQuery(id: number, titulo: string, precio: number, 
     productos[id].precio = precio;
     productos[id].stock += agregarStock;
 }
+
+export function PublicarProductoQuery(titulo: string, precio: number, stock: number, imagen: string) {
+    const nuevoProducto = { titulo: titulo, precio: precio, stock: stock, imagen: imagen, id: productos.length };
+    productos.push(nuevoProducto);
+}

@@ -17,7 +17,7 @@ export default function CardProducto({ producto, onEditar }: Props) {
                     src={producto.imagen}
                     alt={producto.titulo}
                     fill
-                    className="modal-producto-imagen"
+                    className="card-producto-imagen"
                     sizes="(max-width: 200px) 100vw, (max-width: 200px) 50vw"
                     loading="eager">
                 </Image>

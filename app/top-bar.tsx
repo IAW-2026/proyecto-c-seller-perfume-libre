@@ -3,14 +3,12 @@
 import "./top-bar.css";
 import { Show, UserButton } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation';
-
-function publicarProducto() {
-    console.log('publicar producto');
-}
+import { useAppContext } from './appContext';
 
 export default function TopBar() {
 
     const path = usePathname();
+    const { abrirModalCrear } = useAppContext();
 
     return (
         <Show when="signed-in">
@@ -20,7 +18,7 @@ export default function TopBar() {
                 {path === "/mis-productos" && (
                     <button
                         className="topBar-publicar-producto"
-                        onClick={ publicarProducto }
+                        onClick={ abrirModalCrear }
                     >
                         Publicar Producto
                     </button>

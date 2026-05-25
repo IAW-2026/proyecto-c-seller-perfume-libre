@@ -1,0 +1,39 @@
+.cardOrden {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: var(--color-slate-300);
+    align-content:center;
+    justify-content:center;
+    align-items:center;
+    border-radius: 8px;
+    border-color: black;
+    border-width: 1px;
+}
+
+.contenedorImagen {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+}
+
+.imagen {
+    object-fit: contain;
+}
+
+.boton {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 10px;
+    margin: 10px;
+}
+
+    .boton:hover {
+        background-color: var(--color-slate-600);
+    }

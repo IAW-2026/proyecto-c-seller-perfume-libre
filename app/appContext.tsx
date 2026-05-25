@@ -8,8 +8,11 @@ import {
 
 interface AppContextType {
     modalCrearAbierto: boolean;
+    modalOrdenesAbierto: boolean;
     abrirModalCrear: () => void;
     cerrarModalCrear: () => void;
+    abrirModalOrdenes: () => void;
+    cerrarModalOrdenes: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -17,13 +20,16 @@ const AppContext = createContext<AppContextType | null>(null);
 export function ContextProvider( { children }: { children: React.ReactNode; }) {
 
     const [modalCrearAbierto, setModalCrearAbierto] = useState(false);
+    const [modalOrdenesAbierto, setModalOrdenesAbierto] = useState(false);
 
     function abrirModalCrear() { setModalCrearAbierto(true); }
     function cerrarModalCrear() { setModalCrearAbierto(false); }
+    function abrirModalOrdenes() { setModalOrdenesAbierto(true); }
+    function cerrarModalOrdenes() { setModalOrdenesAbierto(false); }
 
     return (
 
-        <AppContext.Provider value={{ modalCrearAbierto, abrirModalCrear, cerrarModalCrear }} >
+        <AppContext.Provider value={{ modalCrearAbierto, modalOrdenesAbierto, abrirModalCrear, cerrarModalCrear, abrirModalOrdenes, cerrarModalOrdenes }} >
             {children}
         </AppContext.Provider>
 

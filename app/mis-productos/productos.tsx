@@ -2,18 +2,21 @@
 
 import { useState } from "react";
 import CardProducto from "./card-producto";
-import { Producto } from "@/lib/db/schemes";
+import { Producto, OrdenAPreparar } from "@/lib/db/schemes";
 import './mis-productos.css';
 import { EditarProducto } from '@/lib/db/db';
 import { useAppContext } from '@/app/appContext';
 import ModalEditar from './modal-editar';
 import ModalCrear from './modal-crear';
+import ModalOrdenes from './modal-ordenes';
 
 interface Props {
     productos: Producto[];
+    ordenes: OrdenAPreparar[];
+    productosOrdenes: Producto[];
 }
 
-export default function ProductosCliente({ productos }: Props) {
+export default function ProductosCliente({ productos, ordenes, productosOrdenes }: Props) {
 
     const [titulo, setTitulo] = useState("");
     const [precio, setPrecio] = useState(0);
@@ -22,7 +25,7 @@ export default function ProductosCliente({ productos }: Props) {
 
     const [productoEditando, setProductoEditando] = useState<Producto | null>(null);
 
-    const { modalCrearAbierto } = useAppContext();
+    const { modalCrearAbierto, modalOrdenesAbierto } = useAppContext();
 
     async function guardarCambios() {
         await EditarProducto(productoId, titulo, precio, agregarStock);
@@ -67,11 +70,17 @@ export default function ProductosCliente({ productos }: Props) {
 
             )}
 
-            {/* ====================== MODAL CREAR ========================*/}
-
             {modalCrearAbierto && (
                <ModalCrear/>
             )}
+
+            {
+                modalOrdenesAbierto && (
+                    <ModalOrdenes
+                        ordenes={ordenes}
+                        productosOrdenes={productosOrdenes}
+                    />
+                )}
         </>
     );
 }

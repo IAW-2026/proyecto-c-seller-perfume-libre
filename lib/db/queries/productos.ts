@@ -66,3 +66,13 @@ export function PublicarProductoQuery(titulo: string, precio: number, stock: num
     const nuevoProducto = { titulo: titulo, precio: precio, stock: stock, imagen: imagen, id: productos.length };
     productos.push(nuevoProducto);
 }
+
+export async function ObtenerProductosQuery(productosId: number[]): Promise<Producto[]> {
+    const ret: Producto[] = [];
+
+    for (let i = 0; i < productosId.length; i++) {
+        ret.push(productos[productosId[i]]);
+    }
+
+    return ret;
+}

@@ -23,6 +23,8 @@
     gap: 40px;
     padding: 60px;
     background-color: var(--color-slate-100);
+    justify-items: center;
+    overflow-y: auto; 
 }
  
 .card-producto {
@@ -36,6 +38,7 @@
     border-color: black;
     align-items: center;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
+    max-width: 400px;
 }
 
 .card-producto:hover {

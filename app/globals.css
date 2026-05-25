@@ -3,4 +3,14 @@
 :root {
     background-color: var(--color-slate-50);
 }
- 
+
+.mainLayout {
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+}
+
+body {
+    height: 100vh;
+} 

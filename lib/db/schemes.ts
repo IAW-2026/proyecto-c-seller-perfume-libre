@@ -5,3 +5,9 @@ export interface Producto {
     precio: number;
     imagen: string;
 }
+
+export interface OrdenAPreparar {
+    idOrdenAPreparar: number;
+    idProducto: number;
+    cantidad: number;
+}

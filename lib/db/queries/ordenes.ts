@@ -1,7 +1,6 @@
 import 'server-only'
 
 import { OrdenAPreparar } from '../schemes';
-import { sql } from './connect';
 
 const ordenes: OrdenAPreparar[] = [
     {

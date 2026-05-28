@@ -94,7 +94,7 @@ export default function ModalCrear() {
 
                 <div className={styles.modalDivInferior}>
 
-                    <button className={styles.modalBoton} onClick={publicarProducto}
+                    <button className={styles.modalBoton} onClick={async () => { await publicarProducto(); } }
                     >
                         Publicar Producto
                     </button>

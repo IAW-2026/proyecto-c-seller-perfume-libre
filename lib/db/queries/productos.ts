@@ -1,8 +1,6 @@
 import 'server-only'
 
-import { setTimeout } from 'timers/promises';  
 import { Producto } from '../schemes';
-import { sql } from './connect'
 
 const productos: Producto[] = [
     {
@@ -50,9 +48,7 @@ const productos: Producto[] = [
 
 ];
 
-// delay para mostrar el skeleton 
 export async function ObtenerMisProductosQuery(userId: string): Promise<Producto[]> {
-    await setTimeout(2000);
     return productos;
 } 
 

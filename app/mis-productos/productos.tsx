@@ -2,21 +2,24 @@
 
 import { useState } from "react";
 import CardProducto from "./card-producto";
-import { Producto, OrdenAPreparar } from "@/lib/db/schemes";
+import { Producto, OrdenAPreparar, Domicilio } from "@/lib/db/schemes";
 import './mis-productos.css';
 import { EditarProducto } from '@/lib/db/db';
 import { useAppContext } from '@/app/appContext';
 import ModalEditar from './modal-editar';
 import ModalCrear from './modal-crear';
 import ModalOrdenes from './modal-ordenes';
+import ModalDomicilio from './modal-domicilio';
 
 interface Props {
     productos: Producto[];
     ordenes: OrdenAPreparar[];
     productosOrdenes: Producto[];
+    forzarIngresarDireccion: boolean;
+    domicilio: Domicilio;
 }
 
-export default function ProductosCliente({ productos, ordenes, productosOrdenes }: Props) {
+export default function ProductosCliente({ productos, ordenes, productosOrdenes, forzarIngresarDireccion, domicilio }: Props) {
 
     const [titulo, setTitulo] = useState("");
     const [precio, setPrecio] = useState(0);
@@ -25,7 +28,7 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes 
 
     const [productoEditando, setProductoEditando] = useState<Producto | null>(null);
 
-    const { modalCrearAbierto, modalOrdenesAbierto } = useAppContext();
+    const { modalCrearAbierto, modalOrdenesAbierto, modalDomicilioAbierto } = useAppContext();
 
     async function guardarCambios() {
         await EditarProducto(productoId, titulo, precio, agregarStock);
@@ -74,13 +77,19 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes 
                <ModalCrear/>
             )}
 
-            {
-                modalOrdenesAbierto && (
-                    <ModalOrdenes
-                        ordenes={ordenes}
-                        productosOrdenes={productosOrdenes}
-                    />
-                )}
+            {modalOrdenesAbierto && (
+                <ModalOrdenes
+                    ordenes={ordenes}
+                    productosOrdenes={productosOrdenes}
+                />
+            )}
+
+            {(modalDomicilioAbierto || forzarIngresarDireccion) && (
+                <ModalDomicilio
+                    forzarIngresarDireccion={forzarIngresarDireccion}
+                    domicilio={domicilio }
+                />
+            )}
         </>
     );
 }

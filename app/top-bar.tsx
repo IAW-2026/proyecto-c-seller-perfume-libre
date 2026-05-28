@@ -9,7 +9,7 @@ import { useState } from 'react';
 export default function TopBar() {
 
     const path = usePathname();
-    const { abrirModalCrear, abrirModalOrdenes } = useAppContext();
+    const { abrirModalCrear, abrirModalOrdenes, abrirModalDomicilio } = useAppContext();
     const [menuAbierto, setMenuAbierto] = useState(false);
 
     return (
@@ -30,6 +30,12 @@ export default function TopBar() {
                             onClick={ abrirModalOrdenes }
                         >
                             Ver Ordenes
+                        </button>
+                        <button
+                            className="topBar-boton"
+                            onClick={abrirModalDomicilio}
+                        >
+                            Cambiar Domicilio
                         </button>
                     </div>
                 )}
@@ -61,6 +67,13 @@ export default function TopBar() {
                                 onClick={() => { abrirModalOrdenes(); setMenuAbierto(false); }}
                             >
                                 Ver Órdenes
+                            </button>
+
+                            <button
+                                className="botonMenuMobile"
+                                onClick={() => { abrirModalDomicilio(); setMenuAbierto(false); }}
+                            >
+                                Cambiar Domicilio
                             </button>
 
                         </div>

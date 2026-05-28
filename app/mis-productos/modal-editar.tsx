@@ -86,7 +86,7 @@ export default function ModalEditar({ producto, cerrar, guardar, setTitulo, setP
 
                 <div className={styles.modalDivInferior }>
 
-                    <button className={styles.modalBoton} onClick = { guardar }
+                    <button className={styles.modalBoton} onClick={async () => { await guardar(); } }
                     >
                         Guardar
                     </button>

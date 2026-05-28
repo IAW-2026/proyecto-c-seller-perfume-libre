@@ -12,11 +12,12 @@ interface Props {
     imagen: string;
 }
 
-async function ordenHecha(idOrden: number) {
-    await OrdenAPrepararHecha(idOrden);
-}
+export default function CardOrden({ idOrden, titulo, cantidad, imagen }: Props) {
 
-export default function CardOrden({ idOrden, titulo, cantidad, imagen } : Props) {
+    async function ordenHecha(idOrden: number) {
+        await OrdenAPrepararHecha(idOrden);
+    }
+
     return (
         <div className={styles.cardOrden}>
             <div className={styles.contenedorImagen}>
@@ -30,7 +31,7 @@ export default function CardOrden({ idOrden, titulo, cantidad, imagen } : Props)
             </div>
             <p>{ titulo }</p>
             <p>{ `Cantidad: ${cantidad}` }</p>
-            <button className={styles.boton} onClick={ ()=>ordenHecha(idOrden) }
+            <button className={styles.boton} onClick={async () => { await ordenHecha(idOrden); } }
             >
             Confirmar Orden Hecha
             </button>

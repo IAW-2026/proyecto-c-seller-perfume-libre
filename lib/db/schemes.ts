@@ -1,8 +1,12 @@
+export type EstadoProducto = "activo" | "pausado" | "borrado";
 export interface Producto {
-    id: number;
-    stock: number;
+    producto_id: number;
+    vendedor_id: string;
     titulo: string;
+    descripcion: string;
     precio: number;
+    stock: number;
+    estado: EstadoProducto;
     imagen: string;
 }
 

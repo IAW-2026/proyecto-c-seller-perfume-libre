@@ -31,7 +31,7 @@ export default function ModalOrdenes({ ordenes, productosOrdenes }: Props) {
                                 titulo={productosOrdenes[index].titulo}
                                 cantidad={orden.cantidad}
                                 idOrden={orden.idOrdenAPreparar}
-                                imagen={productosOrdenes[index].imagen}
+                                imagen={productosOrdenes[index].imagen }
                                 key={orden.idOrdenAPreparar}
                             />
 

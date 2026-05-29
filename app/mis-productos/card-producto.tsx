@@ -14,7 +14,7 @@ export default function CardProducto({ producto, onEditar }: Props) {
         <div className="card-producto"> 
             <div className="card-producto-contenedor-imagen">
                 <Image
-                    src={producto.imagen}
+                    src={producto.imagen }
                     alt={producto.titulo}
                     fill
                     className="card-producto-imagen"

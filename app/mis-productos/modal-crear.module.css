@@ -19,7 +19,7 @@
 
 .modalDivSuperior {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     background-color: var(--color-slate-300);
@@ -39,14 +39,13 @@
 }
 
 .modalContenedorImagen {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 10px;
-}
+    position: relative; 
+    width: auto; 
+    margin: 10px; 
+} 
 
-.productoImagen {
-    object-fit: contain;  
+.productoImagen { 
+    object-fit: contain;
 }
 
 .productoImagenSeleccionada {
@@ -97,4 +96,8 @@
 
 .modalBotonImagen {
     cursor: pointer;
+}
+
+.inputFile {
+    display: none;
 }

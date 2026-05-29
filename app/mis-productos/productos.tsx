@@ -4,7 +4,7 @@ import { useState } from "react";
 import CardProducto from "./card-producto";
 import { Producto, OrdenAPreparar, Domicilio } from "@/lib/db/schemes";
 import './mis-productos.css';
-import { EditarProducto } from '@/lib/db/db';
+import { EditarProducto,  EditarCategorias } from '@/lib/db/db';
 import { useAppContext } from '@/app/appContext';
 import ModalEditar from './modal-editar';
 import ModalCrear from './modal-crear';
@@ -15,23 +15,37 @@ interface Props {
     productos: Producto[];
     ordenes: OrdenAPreparar[];
     productosOrdenes: Producto[];
+    productosCategorias: Record<number, string[]>;
     forzarIngresarDireccion: boolean;
     domicilio: Domicilio;
 }
 
-export default function ProductosCliente({ productos, ordenes, productosOrdenes, forzarIngresarDireccion, domicilio }: Props) {
+export default function ProductosCliente({ productos, ordenes, productosOrdenes, productosCategorias, forzarIngresarDireccion, domicilio }: Props) {
 
     const [titulo, setTitulo] = useState("");
+    const [descripcion, setDescripcion] = useState("");
     const [precio, setPrecio] = useState(0);
     const [agregarStock, setAgregarStock] = useState(0);
-    const [productoId, setProductoId] = useState(0);
+    const [categorias, setCategorias] = useState<string[]>([]);
 
     const [productoEditando, setProductoEditando] = useState<Producto | null>(null);
 
     const { modalCrearAbierto, modalOrdenesAbierto, modalDomicilioAbierto } = useAppContext();
 
+    function categoriasIguales(a: string[], b: string[]) {
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        return a.every((valor, index) => valor === b[index]);
+    }
+
     async function guardarCambios() {
-        //await EditarProducto(productoId, titulo, precio, agregarStock);
+        await EditarProducto(productoEditando!.producto_id, productoEditando!.vendedor_id, titulo, descripcion, precio, productoEditando!.stock + agregarStock, productoEditando!.estado, productoEditando!.imagen);
+
+        if (!categoriasIguales(productosCategorias[productoEditando!.producto_id], categorias)) {
+            await EditarCategorias(productoEditando!.producto_id, categorias);
+        }
 
         setProductoEditando(null);
     }
@@ -39,8 +53,9 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes,
     function abrirModal(producto: Producto) {
         setProductoEditando(producto);
         setTitulo(producto.titulo);
+        setDescripcion(producto.descripcion);
         setPrecio(producto.precio);
-        setProductoId(producto.producto_id);
+        setCategorias(productosCategorias[producto.producto_id]);
         setAgregarStock(0);
     }
 
@@ -66,7 +81,10 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes,
                     producto={ productoEditando }
                     cerrar={ () => setProductoEditando(null) }
                     guardar={ guardarCambios }
-                    setTitulo={ setTitulo }
+                    setTitulo={setTitulo}
+                    setDescripcion={setDescripcion}
+                    categorias={categorias}
+                    setCategorias={setCategorias}
                     setPrecio={ setPrecio }
                     setAgregarStock={ setAgregarStock }
                 />

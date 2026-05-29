@@ -15,6 +15,9 @@ export default function ModalCrear() {
     const [descripcion, setDescripcion] = useState("");
     const [imagenFile, setImagenFile] = useState<File | null>(null);
     const [previewURL, setPreviewURL] = useState("");
+    const [categorias, setCategorias] = useState<string[]>([]);
+    const [agregandoCategoria, setAgregandoCategoria] = useState(false);
+    const [nuevaCategoria, setNuevaCategoria] = useState("");
 
     async function subirImagen() {
         if (!imagenFile)
@@ -31,7 +34,7 @@ export default function ModalCrear() {
         console.log(imagenFile);
 
         const url = await subirImagen();
-        await PublicarProducto(titulo, descripcion, precio, stock, "activo", url);
+        await PublicarProducto(titulo, descripcion, precio, stock, "activo", url, categorias);
 
         cerrarModalCrear();
     }
@@ -121,6 +124,86 @@ export default function ModalCrear() {
                         onChange={(e) => setStock(Number(e.target.value))}
                         onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
                     />
+
+                    <p>Categorias</p>
+
+                    <div className={styles.categoriasContainer}>
+
+                        {categorias.map((categoria) => (
+                            <div key={categoria} className={styles.categoriaTag}>
+
+                                {`${categoria}`}
+
+                                <button
+                                    className={styles.categoriasEliminar}
+                                    onClick={() => { setCategorias(categorias.filter((e) => e !== categoria)); }}
+                                >
+                                x
+                                </button>
+
+                            </div>
+                            )
+                        )}
+
+                        {!agregandoCategoria && (
+                            <button
+                                className={styles.categoriaBoton }
+                                onClick={() => setAgregandoCategoria(true)}
+                            >
+                                +
+                            </button>
+
+                        )}
+
+                        {agregandoCategoria && (
+                            <input
+                                className={styles.inputCategoria}
+                                size={
+                                    Math.min(
+                                        Math.max(
+                                            nuevaCategoria.length,
+                                            1
+                                        ),
+                                        20
+                                    )
+                                }
+                                autoFocus
+                                value={nuevaCategoria}
+                                onChange={(e) =>
+                                    setNuevaCategoria(
+                                        e.target.value
+                                    )
+                                }
+                                onKeyDown={(e) => {
+                                    if (e.key === "Escape") {
+                                        setAgregandoCategoria(false);
+                                        setNuevaCategoria("");
+                                    }
+
+                                    if (e.key === "Backspace" && nuevaCategoria === "") {
+                                        setAgregandoCategoria(false);
+                                        setNuevaCategoria("");
+                                    }
+
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+
+                                        if (nuevaCategoria.trim() === "") {
+                                            return;
+                                        }
+
+                                        setCategorias([ ...categorias, nuevaCategoria.trim()]);
+
+                                        setNuevaCategoria("");
+
+                                        setAgregandoCategoria(false);
+                                    }
+                                }}
+                            />
+                        )}
+
+                    </div>
+
                 </div>
 
                 <div className={styles.modalDivInferior}>

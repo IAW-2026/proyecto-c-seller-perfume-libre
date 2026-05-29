@@ -16,7 +16,7 @@ export async function ObtenerMisProductosQuery(userId: string): Promise<Producto
 export async function EditarProductoQuery(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) { 
     await pool.query(`
         UPDATE producto
-        SET vendeodr_id = $2, titulo=$3, descripcion=$4, precio=$5, stock=$6, estado=$7, imagen=$8
+        SET vendedor_id = $2, titulo=$3, descripcion=$4, precio=$5, stock=$6, estado=$7, imagen=$8
         WHERE producto_id=$1`,
     [producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen]
     );

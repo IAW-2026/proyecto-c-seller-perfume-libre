@@ -37,3 +37,9 @@ export interface Vendedor {
     nombre: string;
     apellido: string;
 } 
+
+export interface Categoria {
+    categoria_id: number;
+    producto_id: number;
+    nombre: string;
+}

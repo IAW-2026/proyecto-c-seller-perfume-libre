@@ -7,6 +7,7 @@ import { OrdenAPreparar, Producto, Domicilio, Vendedor, EstadoProducto } from '.
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery } from './queries/vendedor';
 import { CrearDomicilioQuery, ActualizarDomicilioQuery, ObtenerDomicilioQuery } from './queries/domicilio';
+import { PublicarProductoCategoriasQuery, ObtenerCategoriasDeProductosQuery, EditarCategoriasQuery } from './queries/categoria';
 
 export async function EditarProducto(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
     await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen);
@@ -18,9 +19,10 @@ export async function ObtenerMisProductos() {
     return await ObtenerMisProductosQuery(userId!);
 }
 
-export async function PublicarProducto(titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
+export async function PublicarProducto(titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string, categorias: string[]) {
     const { userId } = await auth();
-    await PublicarProductoQuery(userId!, titulo, descripcion, precio, stock, estado, imagen);
+    const producto = await PublicarProductoQuery(userId!, titulo, descripcion, precio, stock, estado, imagen);
+    await PublicarProductoCategoriasQuery(producto.producto_id, categorias);
     revalidatePath("/mis-productos");
 }
 
@@ -82,4 +84,13 @@ export async function ObtenerVendedor() : Promise<Vendedor> {
 
 export async function ObtenerDomicilio(domicilio_id: number) {
     return await ObtenerDomicilioQuery(domicilio_id);
+}
+
+export async function ObtenerCategoriasDeProductos(productosId: number[]) {
+    return ObtenerCategoriasDeProductosQuery(productosId)
+}
+
+export async function EditarCategorias(producto_id: number, categorias: string[]) {
+    await EditarCategoriasQuery(producto_id, categorias);
+    revalidatePath("/mis-productos");
 }

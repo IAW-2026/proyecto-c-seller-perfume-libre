@@ -1,4 +1,4 @@
-import { ObtenerMisProductos, ObtenerOrdenesAPreparar, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio } from '@/lib/db/db';
+import { ObtenerMisProductos, ObtenerOrdenesAPreparar, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio, ObtenerCategoriasDeProductos } from '@/lib/db/db';
 import ProductosCliente from './productos';
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation';
@@ -28,11 +28,12 @@ export default async function Page() {
     }
 
     const productos = await ObtenerMisProductos();
+    const productosCategorias = await ObtenerCategoriasDeProductos(productos.map(p => p.producto_id));
 
     const ordenes = await ObtenerOrdenesAPreparar("");
     const productosOrdenes = await ObtenerProductos(ordenes.map(orden => orden.idProducto));
 
     return (
-        <ProductosCliente productos={productos} ordenes={ordenes} productosOrdenes={productosOrdenes} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} />
+        <ProductosCliente productos={productos} ordenes={ordenes} productosOrdenes={productosOrdenes} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias = {productosCategorias} />
     )
 }

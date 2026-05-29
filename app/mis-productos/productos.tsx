@@ -31,7 +31,7 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes,
     const { modalCrearAbierto, modalOrdenesAbierto, modalDomicilioAbierto } = useAppContext();
 
     async function guardarCambios() {
-        await EditarProducto(productoId, titulo, precio, agregarStock);
+        //await EditarProducto(productoId, titulo, precio, agregarStock);
 
         setProductoEditando(null);
     }
@@ -40,7 +40,7 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes,
         setProductoEditando(producto);
         setTitulo(producto.titulo);
         setPrecio(producto.precio);
-        setProductoId(producto.id);
+        setProductoId(producto.producto_id);
         setAgregarStock(0);
     }
 
@@ -51,7 +51,7 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes,
                 {productos.map((producto) => (
 
                     <CardProducto
-                        key={producto.id}
+                        key={producto.producto_id}
                         producto={producto}
                         onEditar={abrirModal}
                     />

@@ -1,0 +1,47 @@
+import 'server-only'
+
+import { Producto, EstadoProducto } from '../schemes';
+import { pool } from './connect';
+
+export async function ObtenerMisProductosQuery(userId: string): Promise<Producto[]> {
+    const result = await pool.query<Producto>(`
+        SELECT * FROM producto
+        WHERE vendedor_id=$1`,
+    [userId]
+    );
+
+    return result.rows;
+} 
+
+export async function EditarProductoQuery(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) { 
+    await pool.query(`
+        UPDATE producto
+        SET vendeodr_id = $2, titulo=$3, descripcion=$4, precio=$5, stock=$6, estado=$7, imagen=$8
+        WHERE producto_id=$1`,
+    [producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen]
+    );
+}
+
+export async function PublicarProductoQuery(vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) : Promise<Producto> {
+    const result = await pool.query<Producto>(`
+        INSERT INTO producto (vendedor_id, titulo, descripcion, precio, stock, estado,imagen)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *`,
+    [vendedor_id, titulo, descripcion, precio, stock, estado, imagen]
+    );
+
+    return result.rows[0];
+}
+
+export async function ObtenerProductosQuery(productosId: number[]): Promise<Producto[]> {
+    const result = await pool.query<Producto>(`
+        SELECT * FROM producto
+        WHERE producto_id = ANY($1)
+        ORDER BY array_position(
+            $1, producto_id
+        )`,
+        [productosId]
+    );
+
+    return result.rows;
+}

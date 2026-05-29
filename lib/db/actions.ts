@@ -1,26 +1,26 @@
 'use server'
 
 import { revalidatePath } from 'next/cache';
-import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery } from './queries/productos';
+import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery } from './queries/producto';
 import {ObtenerOrdenesAPrepararQuery, OrdenAPrepararHechaQuery} from './queries/ordenes';
-import { OrdenAPreparar, Producto, Domicilio, Vendedor } from './schemes';
+import { OrdenAPreparar, Producto, Domicilio, Vendedor, EstadoProducto } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery } from './queries/vendedor';
 import { CrearDomicilioQuery, ActualizarDomicilioQuery, ObtenerDomicilioQuery } from './queries/domicilio';
 
-export async function EditarProducto(id: number, titulo: string, precio: number, agregarStock: number) {
-    console.log("editar producto");
-    await EditarProductoQuery(id, titulo, precio, agregarStock);
+export async function EditarProducto(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
+    await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen);
     revalidatePath("/mis-productos");
 }
 
-export async function ObtenerMisProductos(userId: string) {
-    return await ObtenerMisProductosQuery(userId);
+export async function ObtenerMisProductos() {
+    const { userId } = await auth();
+    return await ObtenerMisProductosQuery(userId!);
 }
 
-export async function PublicarProducto(titulo: string, precio: number, stock: number, imagen: string) {
-    console.log(`titulo: ${titulo}, precio: ${precio}, stock: ${stock}, imagen: ${imagen}`);
-    await PublicarProductoQuery(titulo, precio, stock, imagen);
+export async function PublicarProducto(titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
+    const { userId } = await auth();
+    await PublicarProductoQuery(userId!, titulo, descripcion, precio, stock, estado, imagen);
     revalidatePath("/mis-productos");
 }
 

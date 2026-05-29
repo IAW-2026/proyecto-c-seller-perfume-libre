@@ -6,22 +6,33 @@ import { useAppContext } from '@/app/appContext';
 import { useState } from 'react';
 import { PublicarProducto } from '@/lib/db/db';
 
-const imagenes = [
-    "/1.png",
-    "/2.png",
-    "/3.png"
-];
-
 export default function ModalCrear() {
     const { cerrarModalCrear } = useAppContext();
 
     const [titulo, setTitulo] = useState("");
     const [precio, setPrecio] = useState(0);
-    const [imagenSeleccionada, setImagenSeleccionada] = useState("/1.png");
     const [stock, setStock] = useState(0);
+    const [descripcion, setDescripcion] = useState("");
+    const [imagenFile, setImagenFile] = useState<File | null>(null);
+    const [previewURL, setPreviewURL] = useState("");
+
+    async function subirImagen() {
+        if (!imagenFile)
+            return;
+
+        const formData = new FormData();
+        formData.append("file", imagenFile);
+        const response = await fetch("api/subir-imagen", { method: "POST", body: formData });
+        const data = await response.json();
+        return data.url;
+    }
 
     async function publicarProducto() {
-        await PublicarProducto(titulo, precio, stock, imagenSeleccionada);
+        console.log(imagenFile);
+
+        const url = await subirImagen();
+        await PublicarProducto(titulo, descripcion, precio, stock, "activo", url);
+
         cerrarModalCrear();
     }
 
@@ -32,29 +43,40 @@ export default function ModalCrear() {
 
                 <div className={styles.modalDivSuperior}>
 
-                <p>Seleccionar Foto</p>
+                    <label className={styles.modalBoton}>
 
-                    <div className={styles.modalDivSuperiorImagenes }>
-                        {imagenes.map((imagen) => (
-                            <div className={styles.modalContenedorImagen} key={imagen}>
-                                <button
-                                    className={styles.modalBotonImagen}
-                                    onClick={() => setImagenSeleccionada(imagen) }
-                                >
-                                    <Image
-                                        src={imagen}
-                                        alt="imagen"
-                                        fill
-                                        className={imagenSeleccionada === imagen ? styles.productoImagenSeleccionada : styles.productoImagen}
-                                        sizes="(max-width: 100px) 100vw, (max-width: 50px) 100vw"
-                                        loading="eager">
-                                    </Image>
-                                </button>
-                            </div>
+                        Seleccionar Imagen
 
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className={styles.inputFile}
+                            onChange={(e) => {
+                                const file =e.target.files?.[0];
 
-                        ))}
-                    </div>
+                                if (!file)
+                                    return;
+
+                                setImagenFile(file);
+
+                                setPreviewURL(URL.createObjectURL(file));
+                            }}
+                        />
+
+                    </label>
+
+                    {(previewURL != "") && (
+
+                        <div className={styles.modalContenedorImagen }>
+                            <Image
+                                src={previewURL}
+                                alt="Preview"
+                                width={50}
+                                height={100}
+                                className={styles.productoImagen }
+                            />
+                        </div>
+                    )}
 
                 </div>
 
@@ -67,6 +89,15 @@ export default function ModalCrear() {
                         type="text"
                         defaultValue={titulo}
                         onChange={(e) => setTitulo(e.target.value)}
+                    />
+
+                    <p>Descripcion</p>
+
+                    <input
+                        className={styles.modalInputTexto}
+                        type="text"
+                        defaultValue={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
                     />
 
                     <p>Precio</p>
@@ -84,7 +115,7 @@ export default function ModalCrear() {
                     <input
                         className={styles.modalInputTexto}
                         type="number"
-                        min="0"
+                        min="1"
                         step="1"
                         defaultValue=""
                         onChange={(e) => setStock(Number(e.target.value))}

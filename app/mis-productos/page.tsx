@@ -6,11 +6,6 @@ import { DomicilioInvalido } from '@/lib/db/schemes'
 
 export default async function Page() {
 
-    const productos = await ObtenerMisProductos("");
-
-    const ordenes = await ObtenerOrdenesAPreparar("");
-    const productosOrdenes = await ObtenerProductos(ordenes.map(orden => orden.idProducto));
-
     const { userId } = await auth();
     const user = await currentUser();
 
@@ -31,7 +26,11 @@ export default async function Page() {
     else {
         domicilio = await ObtenerDomicilio(vendedor.domicilio_id);
     }
-    
+
+    const productos = await ObtenerMisProductos();
+
+    const ordenes = await ObtenerOrdenesAPreparar("");
+    const productosOrdenes = await ObtenerProductos(ordenes.map(orden => orden.idProducto));
 
     return (
         <ProductosCliente productos={productos} ordenes={ordenes} productosOrdenes={productosOrdenes} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} />

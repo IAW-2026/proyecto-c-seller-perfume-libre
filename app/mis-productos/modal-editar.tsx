@@ -33,7 +33,7 @@ export default function ModalEditar({ producto, cerrar, guardar, setTitulo, setP
                     <div className={styles.modalContenedorImagen }>
 
                         <Image
-                            src={producto.imagen}
+                            src={producto.imagen }
                             alt={producto.titulo}
                             fill
                             className={styles.modalProductoImagen }

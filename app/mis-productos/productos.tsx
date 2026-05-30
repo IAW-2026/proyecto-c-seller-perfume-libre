@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import CardProducto from "./card-producto";
-import { Producto, OrdenAPreparar, Domicilio } from "@/lib/db/schemes";
+import { Producto, SubOrden, Domicilio } from "@/lib/db/schemes";
 import './mis-productos.css';
 import { EditarProducto,  EditarCategorias } from '@/lib/db/db';
 import { useAppContext } from '@/app/appContext';
@@ -13,7 +13,7 @@ import ModalDomicilio from './modal-domicilio';
 
 interface Props {
     productos: Producto[];
-    ordenes: OrdenAPreparar[];
+    ordenes: SubOrden[];
     productosOrdenes: Producto[];
     productosCategorias: Record<number, string[]>;
     forzarIngresarDireccion: boolean;

@@ -3,12 +3,11 @@
 import styles from "./modal-ordenes.module.css";
 
 import { useAppContext } from '@/app/appContext';
-import { OrdenAPreparar, Producto } from '@/lib/db/db';
-import { ObtenerOrdenesAPreparar, ObtenerProductos } from '@/lib/db/actions';
+import { SubOrden, Producto } from '@/lib/db/db';
 import CardOrden from './card-orden';
 
 interface Props {
-    ordenes: OrdenAPreparar[];
+    ordenes: SubOrden[];
     productosOrdenes: Producto[];
 }
 
@@ -25,14 +24,14 @@ export default function ModalOrdenes({ ordenes, productosOrdenes }: Props) {
 
                     <div className={styles.contenedorCards}>
 
-                        {ordenes.map((orden, index) => (
+                        {ordenes.filter((suborden)=>suborden.estado==="en_preparacion").map((orden, index) => (
 
                             <CardOrden
                                 titulo={productosOrdenes[index].titulo}
                                 cantidad={orden.cantidad}
-                                idOrden={orden.idOrdenAPreparar}
+                                idOrden={orden.suborden_id}
                                 imagen={productosOrdenes[index].imagen }
-                                key={orden.idOrdenAPreparar}
+                                key={orden.suborden_id}
                             />
 
                         ))}

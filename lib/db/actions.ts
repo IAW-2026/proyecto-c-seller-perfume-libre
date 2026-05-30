@@ -2,12 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery } from './queries/producto';
-import {ObtenerOrdenesAPrepararQuery, OrdenAPrepararHechaQuery} from './queries/ordenes';
-import { OrdenAPreparar, Producto, Domicilio, Vendedor, EstadoProducto } from './schemes';
+import { SubOrden, Producto, Domicilio, Vendedor, EstadoProducto } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery } from './queries/vendedor';
 import { CrearDomicilioQuery, ActualizarDomicilioQuery, ObtenerDomicilioQuery } from './queries/domicilio';
 import { PublicarProductoCategoriasQuery, ObtenerCategoriasDeProductosQuery, EditarCategoriasQuery } from './queries/categoria';
+import { ObtenerSubOrdenesQuery, OrdenListaParaRetirarQuery } from './queries/suborden';
 
 export async function EditarProducto(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
     await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen);
@@ -26,13 +26,14 @@ export async function PublicarProducto(titulo: string, descripcion: string, prec
     revalidatePath("/mis-productos");
 }
 
-export async function ObtenerOrdenesAPreparar(userId: string): Promise<OrdenAPreparar[]> {
-    return await ObtenerOrdenesAPrepararQuery(userId);
+export async function ObtenerSubOrdenes(): Promise<SubOrden[]> {
+    const { userId } = await auth();
+    return ObtenerSubOrdenesQuery(userId!);
 }
 
-export async function OrdenAPrepararHecha(ordenAPrepararId: number) {
+export async function OrdenAPrepararHecha(suborden_id: number) {
     console.log("llamar a shipping");
-    await OrdenAPrepararHechaQuery(ordenAPrepararId);
+    await OrdenListaParaRetirarQuery(suborden_id);
     revalidatePath("/mis-productos");
 }
 

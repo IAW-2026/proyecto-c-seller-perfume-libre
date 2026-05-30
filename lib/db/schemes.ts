@@ -10,12 +10,6 @@ export interface Producto {
     imagen: string;
 }
 
-export interface OrdenAPreparar {
-    idOrdenAPreparar: number;
-    idProducto: number;
-    cantidad: number;
-}
-
 export interface Domicilio {
     domicilio_id: number;
     calle: string;
@@ -42,4 +36,16 @@ export interface Categoria {
     categoria_id: number;
     producto_id: number;
     nombre: string;
+}
+
+export type EstadoSubOrden = "en_preparacion" | "preparado" | "retirado";
+export interface SubOrden {
+    suborden_id: number;
+    vendedor_id: string;
+    producto_id: number;
+    tracking_id: number;
+    orden_id: number;
+    cantidad: number;
+    precio: number;
+    estado: EstadoSubOrden;
 }

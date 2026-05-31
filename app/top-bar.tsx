@@ -5,6 +5,7 @@ import { Show, UserButton } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation';
 import { useAppContext } from './appContext';
 import { useState } from 'react';
+import { redirect } from 'next/navigation'
 
 export default function TopBar() {
 
@@ -36,6 +37,23 @@ export default function TopBar() {
                             onClick={abrirModalDomicilio}
                         >
                             Cambiar Domicilio
+                        </button>
+                        <button
+                            className="topBar-boton"
+                            onClick={() => { redirect("/resenas") }}
+                        >
+                            Ver mis reseñas
+                        </button>
+                    </div>
+                )}
+
+                {path === "/resenas" && (
+                    <div className="topBar-botones">
+                        <button
+                            className="topBar-boton"
+                            onClick={() => { redirect("/mis-productos") } }
+                        >
+                            Ver mis productos
                         </button>
                     </div>
                 )}
@@ -75,6 +93,24 @@ export default function TopBar() {
                             >
                                 Cambiar Domicilio
                             </button>
+
+                            {path === "/mis-productos" && (
+                                <button
+                                    className="botonMenuMobile"
+                                    onClick={() => { setMenuAbierto(false); redirect("/resenas"); }}
+                                >
+                                    Ir a mis reseñas
+                                </button>
+                            )}
+
+                            {path === "/resenas" && (
+                                <button
+                                    className="botonMenuMobile"
+                                    onClick={() => { setMenuAbierto(false); redirect("/mis-productos"); }}
+                                >
+                                    Ir a mis productos
+                                </button>
+                            )}
 
                         </div>
 

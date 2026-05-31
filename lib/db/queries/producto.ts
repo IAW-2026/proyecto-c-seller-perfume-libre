@@ -45,3 +45,13 @@ export async function ObtenerProductosQuery(productosId: number[]): Promise<Prod
 
     return result.rows;
 }
+
+export async function ObtenerProductoQuery(producto_id: number): Promise<Producto | undefined> {
+    const result = await pool.query<Producto>(`
+        SELECT * FROM producto
+        WHERE producto_id = $1`,
+    [producto_id]
+    );
+
+    return result.rows[0];
+}

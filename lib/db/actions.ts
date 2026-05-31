@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache';
-import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery } from './queries/producto';
+import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery } from './queries/producto';
 import { SubOrden, Producto, Domicilio, Vendedor, EstadoProducto } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery } from './queries/vendedor';
@@ -94,4 +94,8 @@ export async function ObtenerCategoriasDeProductos(productosId: number[]) {
 export async function EditarCategorias(producto_id: number, categorias: string[]) {
     await EditarCategoriasQuery(producto_id, categorias);
     revalidatePath("/mis-productos");
+}
+
+export async function ObtenerProducto(producto_id: number) {
+    return await ObtenerProductoQuery(producto_id);
 }

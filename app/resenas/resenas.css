@@ -1,0 +1,38 @@
+
+.div_principal {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    background-color: var(--color-slate-100);
+    justify-content:space-evenly;
+    align-items:flex-start;
+    gap:10px;
+    flex-wrap:nowrap;
+    margin: 10px;
+}
+
+@media (max-width: 768px) {
+
+    .div_principal {
+        flex-wrap: wrap;
+    }
+}
+
+.resena_fondo {
+    background-color: var(--color-slate-300);
+    border-radius: 12px;
+}
+
+.div_resena {
+    background-color: var(--color-slate-200);
+    border-radius: 8px;
+    margin: 10px;
+    padding: 10px;
+}
+
+.titulo_resena {
+    text-align: center;
+    margin: 10px;
+    border-bottom-width: 3px;
+    border-color: var(--color-slate-500);
+}

@@ -38,7 +38,8 @@ export interface Categoria {
     nombre: string;
 }
 
-export type EstadoSubOrden = "en_preparacion" | "preparado" | "retirado";
+// TODO: no hay api para decirle a shipping que esta preparado.
+export type EstadoSubOrden = "en_preparacion" | "preparado" | "retirado" | "aprobado"; /* aprobado es para mantener consistencia con la api descidida */
 export interface SubOrden {
     suborden_id: number;
     vendedor_id: string;

@@ -25,6 +25,8 @@
     background-color: var(--color-slate-100);
     justify-items: center;
     overflow-y: auto; 
+    height:stretch; 
+    align-content:start; 
 }
  
 .card-producto {
@@ -38,13 +40,33 @@
     border-color: black;
     align-items: center;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
+    max-width: 400px; 
+    justify-content:flex-end; 
+}
+
+    .card-producto:hover {
+        box-shadow: 0px 5px 10px var(--color-slate-500);
+        transform: translateY(-2px);
+    }
+
+.card-producto-pausado {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: lightgray;
+    border-width: 2px;
+    border-color: black;
+    align-items: center;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
     max-width: 400px;
 }
 
-.card-producto:hover {
-    box-shadow: 0px 5px 10px var(--color-slate-500);
-    transform: translateY(-2px);
-}
+    .card-producto-pausado:hover { 
+        box-shadow: 0px 5px 10px var(--color-slate-500);
+        transform: translateY(-2px);
+    }
 
 .card-producto-contenedor-imagen {
     position: relative;

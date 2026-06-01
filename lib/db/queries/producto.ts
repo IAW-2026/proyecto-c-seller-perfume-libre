@@ -4,10 +4,12 @@ import { Producto, EstadoProducto } from '../schemes';
 import { pool } from './connect';
 
 export async function ObtenerMisProductosQuery(userId: string): Promise<Producto[]> {
+    const estadoActivo: EstadoProducto = "activo";
+    const estadoPausado: EstadoProducto = "pausado";
     const result = await pool.query<Producto>(`
         SELECT * FROM producto
-        WHERE vendedor_id=$1`,
-    [userId]
+        WHERE vendedor_id=$1 AND (estado=$2 or estado=$3)`,
+    [userId, estadoActivo, estadoPausado]
     );
 
     return result.rows;
@@ -54,4 +56,15 @@ export async function ObtenerProductoQuery(producto_id: number): Promise<Product
     );
 
     return result.rows[0];
+}
+
+export async function EliminarProductoQuery(producto_id: number) {
+    const estado: EstadoProducto = 'borrado';
+
+    await pool.query(`
+        UPDATE producto
+        SET estado=$2
+        WHERE producto_id = $1`,
+    [producto_id, estado]
+    )
 }

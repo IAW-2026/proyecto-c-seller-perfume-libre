@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache';
-import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery } from './queries/producto';
+import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery } from './queries/producto';
 import { SubOrden, Producto, Domicilio, Vendedor, EstadoProducto } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery } from './queries/vendedor';
@@ -10,7 +10,27 @@ import { PublicarProductoCategoriasQuery, ObtenerCategoriasDeProductosQuery, Edi
 import { ObtenerSubOrdenesQuery, OrdenListaParaRetirarQuery } from './queries/suborden';
 
 export async function EditarProducto(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
-    await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen);
+    const producto = await ObtenerProductoQuery(producto_id);
+
+    if (!producto)
+        return;
+
+    if (vendedor_id !== producto.vendedor_id)
+        return;
+
+    if (producto.estado === 'pausado') {
+        if (stock > 0) {
+            await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, stock, "activo", imagen);
+        }
+        else {
+            console.log("sasasd");
+            await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, 0, "pausado", imagen);
+        }
+    }
+    else {
+        await EditarProductoQuery(producto_id, vendedor_id, titulo, descripcion, precio, stock, estado, imagen);
+    }
+
     revalidatePath("/mis-productos");
 }
 
@@ -98,4 +118,10 @@ export async function EditarCategorias(producto_id: number, categorias: string[]
 
 export async function ObtenerProducto(producto_id: number) {
     return await ObtenerProductoQuery(producto_id);
+}
+
+export async function ElminarProducto(producto_id: number) {
+    await EliminarProductoQuery(producto_id);
+
+    revalidatePath("/mis-productos");
 }

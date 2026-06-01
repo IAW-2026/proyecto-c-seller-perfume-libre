@@ -1,9 +1,8 @@
-
-import styles from "./modal-domicilio.module.css"
 import { useState } from 'react';
 import { useAppContext } from '@/app/appContext';
 import { CrearYAsignarDomicilio, ActualizarDomicilio } from '@/lib/db/actions'
 import { Domicilio } from '@/lib/db/schemes'
+import './modal.css';
 
 interface Props {
     forzarIngresarDireccion: boolean;
@@ -14,11 +13,37 @@ export default function ModalDomicilio({ forzarIngresarDireccion, domicilio }: P
     const [calle, setCalle] = useState(forzarIngresarDireccion ? "" : domicilio.calle);
     const [ciudad, setCiudad] = useState(forzarIngresarDireccion ? "" : domicilio.ciudad);
     const [provincia, setProvincia] = useState(forzarIngresarDireccion ? "" : domicilio.provincia);
-    const [codigo_postal, setCodigo_postal] = useState(forzarIngresarDireccion ? "" : domicilio.codigo_postal);
+    const [codigo_postal, setCodigo_postal] = useState(forzarIngresarDireccion ? "" : domicilio.codigo_postal.toString());
+    const [error, setError] = useState<string | null>(null);
 
     const { cerrarModalDomicilio } = useAppContext();
 
+    function verificarInput() {
+        if (calle === "") { 
+            setError("Ingrese una calle.");
+            return false;
+        }
+        if (ciudad === "") {
+            setError("Ingrese una ciudad.");
+            return false;
+        }
+        if (provincia === "") {
+            setError("Ingrese una provincia.");
+            return false;
+        }
+        if (codigo_postal === "") {
+            setError("Ingrese un codigo postal.");
+            return false;
+        }
+
+        return true;
+    }
+
     async function confirmar() {
+        if (!verificarInput()) {
+            return;
+        }
+
         if (forzarIngresarDireccion) {
             await CrearYAsignarDomicilio(calle, ciudad, provincia, Number(codigo_postal));
             cerrarModalDomicilio();
@@ -30,77 +55,109 @@ export default function ModalDomicilio({ forzarIngresarDireccion, domicilio }: P
     }
 
     return (
-        <div className={styles.modalFondo}>
+        <>
+            {error && (
+                <div className="modalFondo">
 
-            <div className={styles.modal}>
+                    <div className="modal">
 
-                <div className={styles.modalDivSuperior}>
+                        <p style={{ textAlign: "center" }}>{`${error}`}</p>
 
-                    {forzarIngresarDireccion && (
-                        <p className={styles.primeraVezTitulo }>Antes de empezar a publicar debemos saber tu ubicacion</p>
-                    )}
-
-                    <p className={styles.modalTexto }>Calle</p>
-
-                    <input
-                        className={styles.modalInputTexto}
-                        type="text"
-                        defaultValue={forzarIngresarDireccion ? "" : domicilio.calle}
-                        onChange={(e) => setCalle(e.target.value)}
-                    />
-
-                    <p className={styles.modalTexto}>Ciudad</p>
-
-                    <input
-                        className={styles.modalInputTexto}
-                        type="text"
-                        defaultValue={forzarIngresarDireccion ? "" : domicilio.ciudad}
-                        onChange={(e) => setCiudad(e.target.value)}
-                    />
-
-                    <p className={styles.modalTexto}>Provincia</p>
-
-                    <input
-                        className={styles.modalInputTexto}
-                        type="text"
-                        defaultValue={forzarIngresarDireccion ? "" : domicilio.provincia}
-                        onChange={(e) => setProvincia(e.target.value)}
-                    />
-
-                    <p className={styles.modalTexto}>Codigo Postal</p>
-
-                    <input
-                        className={styles.modalInputTexto}
-                        type="number"
-                        defaultValue={forzarIngresarDireccion ? "" : domicilio.codigo_postal }
-                        onChange={(e) => setCodigo_postal(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
-                    />
-
-                </div>
-
-                <div className={styles.modalDivInferior}>
-
-                    <button
-                        className={styles.modalBoton}
-                        onClick={async () => { await confirmar(); } }
-                    >
-                        Confirmar
-                    </button>
-
-                    {!forzarIngresarDireccion && (
                         <button
-                            className={styles.modalBoton}
-                            onClick={cerrarModalDomicilio}
+                            className="modalBoton"
+                            onClick={() => { setError(null); }}
                         >
-                            Cancelar
+                            OK
                         </button>
-                    )}
+
+                    </div>
 
                 </div>
+            )}
 
-            </div>
+            {!error && (
+                <div className="modalFondo">
 
-        </div>
+                    <div className="modal">
+
+                        <div className="modalScroll">
+
+                            {forzarIngresarDireccion && (
+                                <div className="modalSubDivisionColumn">
+
+                                    <b style={{ textAlign: "center", margin:"10px"}}>Antes de empezar a publicar debemos saber tu ubicacion</b>
+                                </div>
+                            )}
+
+                            <div className="modalSubDivisionColumn">
+
+                                <p>Calle</p>
+
+                                <input
+                                    className="modalInputTexto"
+                                    type="text"
+                                    value={calle }
+                                    onChange={(e) => setCalle(e.target.value)}
+                                />
+
+                                <p>Ciudad</p>
+
+                                <input
+                                    className="modalInputTexto"
+                                    type="text"
+                                    value={ciudad }
+                                    onChange={(e) => setCiudad(e.target.value)}
+                                />
+
+                                <p>Provincia</p>
+
+                                <input
+                                    className="modalInputTexto"
+                                    type="text"
+                                    value={provincia }
+                                    onChange={(e) => setProvincia(e.target.value)}
+                                />
+
+                                <p>Codigo Postal</p>
+
+                                <input
+                                    className="modalInputTexto"
+                                    type="number"
+                                    value={codigo_postal }
+                                    onChange={(e) => setCodigo_postal(e.target.value)}
+                                    onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
+                                />
+
+                            </div>
+                        </div>
+
+                        <div className="modalFooter">
+                            <div className="modalSubDivisionSpaceArround">
+
+                                <button
+                                    className="modalBoton"
+                                    onClick={async () => { await confirmar(); }}
+                                >
+                                    Confirmar
+                                </button>
+
+                                {!forzarIngresarDireccion && (
+                                    <button
+                                        className="modalBoton"
+                                        onClick={cerrarModalDomicilio}
+                                    >
+                                        Cancelar
+                                    </button>
+                                )}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
+        </>
     );
 }

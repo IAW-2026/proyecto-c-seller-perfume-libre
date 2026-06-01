@@ -1,47 +1,38 @@
-"use client";
+'use client'
 
 import Image from "next/image";
-import { Producto, EditarProducto, EditarCategorias } from '@/lib/db/db';
+import { useAppContext } from '@/app/appContext';
+import { useState } from 'react';
+import { PublicarProducto } from '@/lib/db/db';
 import './modal.css';
-import { useLayoutEffect, useRef, useState } from 'react';
 
-interface Props {
-    producto: Producto;
-    cerrar: () => void;
-    categoriasDeProducto: string[];
-}
+export default function ModalPublicar() {
+    const { cerrarModalCrear } = useAppContext();
 
-export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: Props) {
-
+    const [titulo, setTitulo] = useState("");
+    const [precio, setPrecio] = useState("");
+    const [stock, setStock] = useState("");
+    const [descripcion, setDescripcion] = useState("");
+    const [imagenFile, setImagenFile] = useState<File | null>(null);
+    const [previewURL, setPreviewURL] = useState("");
+    const [categorias, setCategorias] = useState<string[]>([]);
     const [agregandoCategoria, setAgregandoCategoria] = useState(false);
     const [nuevaCategoria, setNuevaCategoria] = useState("");
-    const [titulo, setTitulo] = useState(producto.titulo);
-    const [descripcion, setDescripcion] = useState(producto.descripcion);
-    const [precio, setPrecio] = useState(producto.precio.toString());
-    const [agregarStock, setAgregarStock] = useState("0");
-    const [categorias, setCategorias] = useState<string[]>(categoriasDeProducto);
     const [error, setError] = useState<string | null>(null);
 
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    function ajustarAltura() {
-        if (!textareaRef.current) return;
+    async function subirImagen() {
+        if (!imagenFile)
+            return;
 
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height =
-            `${textareaRef.current.scrollHeight}px`;
+        const formData = new FormData();
+        formData.append("file", imagenFile);
+
+        const response = await fetch("api/subir-imagen", { method: "POST", body: formData });
+
+        const data = await response.json();
+
+        return data.url;
     }
-
-    useLayoutEffect(() => {
-        ajustarAltura();
-
-        const textarea = textareaRef.current;
-        if (!textarea) return;
-
-        const observer = new ResizeObserver(() => { ajustarAltura(); });
-        observer.observe(textarea.parentElement!);
-
-        return () => observer.disconnect();
-    }, []);
 
     function verificarInput() {
         if (titulo === "") {
@@ -52,48 +43,46 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
             setError("Ingrese un precio.");
             return false;
         }
-        if (agregarStock === "") {
-            setError("Ingrese un agregar stock");
+        if (stock === "" || stock==="0") {
+            setError("Ingrese un stock");
+            return false;
+        }
+        if (imagenFile === null) {
+            setError("Elija una imagen.");
             return false;
         }
 
         if (Number.isNaN(Number(precio))) {
-            setError("Ingrese un precio valido");
+            setError("Ingrese un precio valido.");
+            return false;
+        }
+        if (Number.isNaN(Number(stock))) {
+            setError("Ingrese un stock valido.");
             return false;
         }
 
-        if (Number.isNaN(Number(agregarStock))) {
-            setError("Ingrese un stock valido");
+        if (titulo.length > 20) {
+            setError("Titulo demasiado largo.");
+            return false;
+        }
+        if (descripcion.length > 50) {
+            setError("Descripcion demasiada larga.");
             return false;
         }
 
         return true;
     }
 
-    function categoriasIguales(a: string[], b: string[]) {
-        if (a.length !== b.length) {
-            return false;
-        }
+    async function publicarProducto() {
+        if (!verificarInput()) return;
 
-        return a.every((valor, index) => valor === b[index]);
-    }
+        const url = await subirImagen();
+        await PublicarProducto(titulo, descripcion, Number(precio), Number(stock), "activo", url, categorias);
 
-    async function guardar() {
-        if (!verificarInput()) {
-            return;
-        }
-
-        await EditarProducto(producto.producto_id, producto.vendedor_id, titulo, descripcion, Number(precio), producto.stock + Number(agregarStock), producto.estado, producto.imagen);
-
-        if (!categoriasIguales(categoriasDeProducto, categorias)) {
-            await EditarCategorias(producto.producto_id, categorias);
-        }
-
-        cerrar();
+        cerrarModalCrear();
     }
 
     return (
-
         <>
             {error && (
                 <div className="modalFondo">
@@ -120,26 +109,43 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                     <div className="modal">
 
                         <div className="modalScroll">
-
                             <div className="modalSubDivisionSpaceArround">
 
-                                <div className="modalContenedorImagen">
+                                <label className="modalBoton">
 
-                                    <Image
-                                        src={producto.imagen}
-                                        alt={producto.titulo}
-                                        sizes="100px"
-                                        width={100}
-                                        height={100 }
-                                        style={{width: "auto",height: "100px"}}
+                                    Seleccionar Imagen
+
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{display:"none"} }
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+
+                                            if (!file)
+                                                return;
+
+                                            setImagenFile(file);
+
+                                            setPreviewURL(URL.createObjectURL(file));
+                                        }}
                                     />
 
-                                </div>
+                                </label>
 
-                                <button className="modalBoton"
-                                >
-                                    Editar Imagen
-                                </button>
+                                {(previewURL != "") && (
+
+                                    <div className="modalContenedorImagen">
+                                        <Image
+                                            src={previewURL}
+                                            alt="Preview"
+                                            sizes="100px"
+                                            width={100}
+                                            height={100}
+                                            style={{ width: "auto", height: "100px" }}
+                                        />
+                                    </div>
+                                )}
 
                             </div>
 
@@ -157,10 +163,14 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                                 <p>Descripcion</p>
 
                                 <textarea
-                                    ref={textareaRef}
                                     className="modalInputTextoMultiLinea"
                                     value={descripcion}
-                                    onChange={(e) => {setDescripcion(e.target.value);}}
+                                    onChange={(e) => {
+                                        setDescripcion(e.target.value); 
+
+                                        e.target.style.height = "auto";
+                                        e.target.style.height = `${e.target.scrollHeight}px`;
+                                    }}
                                 />
 
                                 <p>Precio</p>
@@ -173,15 +183,15 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                                     onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
                                 />
 
-                                <p>Agregar Stock</p>
+                                <p>Stock Inicial</p>
 
                                 <input
                                     className="modalInputTexto"
                                     type="number"
-                                    min="0"
+                                    min="1"
                                     step="1"
-                                    value={agregarStock }
-                                    onChange={(e) => setAgregarStock(e.target.value)}
+                                    value={stock}
+                                    onChange={(e) => setStock(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
                                 />
 
@@ -265,23 +275,23 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                         </div>
 
                         <div className="modalFooter">
+
                             <div className="modalSubDivisionSpaceArround">
 
-                                <button
-                                    className="modalBoton"
-                                    onClick={async () => { await guardar(); }}
+                                <button className="modalBoton" onClick={async () => { await publicarProducto(); }}
                                 >
-                                    Guardar
+                                    Publicar Producto
                                 </button>
 
                                 <button
                                     className="modalBoton"
-                                    onClick={cerrar}
+                                    onClick={cerrarModalCrear}
                                 >
                                     Cancelar
                                 </button>
 
                             </div>
+
                         </div>
 
                     </div>
@@ -289,6 +299,5 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                 </div>
             )}
         </>
-
     );
 }

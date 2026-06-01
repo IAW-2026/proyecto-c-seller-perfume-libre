@@ -1,5 +1,5 @@
 import { ObtenerMisProductos, ObtenerSubOrdenes, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio, ObtenerCategoriasDeProductos } from '@/lib/db/db';
-import ProductosCliente from './productos';
+import ProductosCliente from './productos-cliente';
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation';
 import { DomicilioInvalido } from '@/lib/db/schemes'

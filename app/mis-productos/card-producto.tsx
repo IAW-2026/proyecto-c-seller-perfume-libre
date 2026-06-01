@@ -1,17 +1,20 @@
 'use client'
 
-import { Producto } from '@/lib/db/db';
+import { Producto, ElminarProducto } from '@/lib/db/db';
 import Image from 'next/image';
 import "./mis-productos.css";
 
 interface Props {
     producto: Producto;
-    onEditar: (producto: Producto) => void;
+    editar: (producto: Producto) => void;
 }
 
-export default function CardProducto({ producto, onEditar }: Props) {
+export default function CardProducto({ producto, editar }: Props) {
     return (
-        <div className="card-producto"> 
+        <div className={producto.estado === "activo" ? "card-producto" : "card-producto-pausado"}> 
+            {producto.estado === "pausado" && (
+                <p style={{color:'darkred', textAlign:"center"} }>Producto Pausado</p>
+            )}
             <div className="card-producto-contenedor-imagen">
                 <Image
                     src={producto.imagen }
@@ -33,12 +36,24 @@ export default function CardProducto({ producto, onEditar }: Props) {
 
             </div>
 
-            <button
-                className="card-producto-boton"  
-                onClick={() => onEditar(producto)}
-            >
-                Editar
-            </button>
+            <div style={{display:"flex", flexDirection:"row", gap:"10px"}}>
+
+                <button
+                    className="card-producto-boton"  
+                    onClick={() => editar(producto)}
+                >
+                    Editar
+                </button>
+
+                <button
+                    className="card-producto-boton"
+                    onClick={async () => await ElminarProducto(producto.producto_id)}
+                >
+                    Borrar
+                </button>
+
+            </div>
+
         </div>
     );
 }

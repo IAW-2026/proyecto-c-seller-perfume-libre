@@ -37,12 +37,11 @@ export async function PublicarProductoQuery(vendedor_id: string, titulo: string,
 
 export async function ObtenerProductosQuery(productosId: number[]): Promise<Producto[]> {
     const result = await pool.query<Producto>(`
-        SELECT * FROM producto
-        WHERE producto_id = ANY($1)
-        ORDER BY array_position(
-            $1, producto_id
-        )`,
-        [productosId]
+        SELECT p.*
+        FROM unnest($1::int[]) AS ids(producto_id)
+        JOIN producto p
+        ON p.producto_id = ids.producto_id`,
+    [productosId]
     );
 
     return result.rows;

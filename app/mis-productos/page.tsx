@@ -33,6 +33,9 @@ export default async function Page() {
     const subOrdenes = await ObtenerSubOrdenes();
     const productosOrdenes = await ObtenerProductos(subOrdenes.map(subOrden => subOrden.producto_id));
 
+    console.log(subOrdenes);
+    console.log(productosOrdenes);
+
     return (
         <ProductosCliente productos={productos} ordenes={subOrdenes} productosOrdenes={productosOrdenes} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias = {productosCategorias} />
     )

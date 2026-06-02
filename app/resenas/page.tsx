@@ -16,19 +16,15 @@ export default async function Page() {
     //TODO: fetch de feedback
 
     const resenasVendedor = [
-        { resena: `${crypto.randomUUID()}${crypto.randomUUID()}`, puntaje: 5 },
-        { resena: `${crypto.randomUUID()}`, puntaje: 3 },
-        { resena: `${crypto.randomUUID()}`, puntaje: 1 },
-        { resena: `${crypto.randomUUID()}`, puntaje: 2 },
-        { resena: `${crypto.randomUUID()}`, puntaje: 5 }
+        { resena: `despacha a tiempo`, puntaje: 5 },
+        { resena: `tardo una semana en hacerme el perfume`, puntaje: 3 },
+        { resena: `me llego el perfume equivocado`, puntaje: 1 }
     ];
 
     const resenasProductos = [
-        { producto: `${crypto.randomUUID()}${crypto.randomUUID()}`, resena: `${crypto.randomUUID()}`, puntaje: 3 },
-        { producto: `${crypto.randomUUID()}`, resena: `${crypto.randomUUID()}`, puntaje: 2 },
-        { producto: `${crypto.randomUUID()}`, resena: `${crypto.randomUUID()}`, puntaje: 1 },
-        { producto: `${crypto.randomUUID()}`, resena: `${crypto.randomUUID()}`, puntaje: 4 },
-        { producto: `${crypto.randomUUID()}`, resena: `${crypto.randomUUID()}`, puntaje: 5 }
+        { producto: `Hugo Boss`, resena: `dura poco el perfume, pero esta bueno`, puntaje: 3 },
+        { producto: `Milanel Aura Pura`, resena: `no levanto ni una mina con esto`, puntaje: 2 },
+        { producto: `Hugo Boss`, resena: `la que me atendio en el super me dijo que buen perfume`, puntaje: 4 }
     ];
 
     return <Resenas resenasProductos={resenasProductos} resenasVendedor={resenasVendedor}/>

@@ -32,6 +32,8 @@ export async function GET(request: Request) {
 
     // const productosPorVendedores: Record<string, Producto> = {}
 
+    // TODO: restar stock en tabla producto
+
     await OrdenAprobada(Number(id_orden), "user_3EDuXdnJ2Hg5p7IUuHunI8Bm066", [4]);
 
     return NextResponse.json({ status: 200 });

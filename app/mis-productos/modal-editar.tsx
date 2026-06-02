@@ -136,11 +136,6 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
 
                                 </div>
 
-                                <button className="modalBoton"
-                                >
-                                    Editar Imagen
-                                </button>
-
                             </div>
 
                             <div className="modalSubDivisionColumn">

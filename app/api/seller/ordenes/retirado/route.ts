@@ -1,4 +1,4 @@
-import { OrdenRetirada } from '@/app/api/queries';
+import { ObtenerSubOrdenes, OrdenRetirada } from '@/app/api/queries';
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -6,10 +6,6 @@ export async function GET(request: Request) {
     const id_orden = request.headers.get("id_orden");
     const tracking_id = request.headers.get("tracking_id");
     const fecha_retiro_req = request.headers.get("fecha_retiro");
-
-    //if (apiKey !== "sas") {
-    //    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    //}
 
     if (!tracking_id) {
         return NextResponse.json({ error: "No se especifica tracking id", status: 400 });
@@ -21,6 +17,14 @@ export async function GET(request: Request) {
 
     if (!fecha_retiro_req) {
         return NextResponse.json({ error: "No se especifica fecha", status: 400 });
+    }
+
+    if (!apiKey) {
+        return NextResponse.json({ error: "Unauthorized", status: 401 });
+    }
+
+    if (apiKey !== process.env.SELLER_API_KEY) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const fecha_retiro = new Date(fecha_retiro_req);
@@ -37,11 +41,15 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Id orden invalido" }, { status: 400 });
     }
 
+    const subordenes = await ObtenerSubOrdenes(Number(id_orden));
+
+    for (const suborden of subordenes) {
+        if (suborden.estado === "en_preparacion") {
+            return NextResponse.json({ error: "Subordenes no hechas" }, { status: 400 });
+        }
+    }
+
     await OrdenRetirada(Number(id_orden), Number(tracking_id), fecha_retiro);
 
-    console.log(id_orden);
-    console.log(tracking_id);
-    console.log(fecha_retiro);
-
-    return NextResponse.json({ estado: "en_preparacion", id_orden: `${id_orden}` });
+    return NextResponse.json({ status: 200 });
 }

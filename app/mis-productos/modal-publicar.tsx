@@ -27,7 +27,7 @@ export default function ModalPublicar() {
         const formData = new FormData();
         formData.append("file", imagenFile);
 
-        const response = await fetch("api/subir-imagen", { method: "POST", body: formData });
+        const response = await fetch("api/seller/subir-imagen", { method: "POST", body: formData });
 
         const data = await response.json();
 

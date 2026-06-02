@@ -25,19 +25,12 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Unauthorized", status: 401 });
     }
 
-
-    //if (apiKey !== "sas") {
-    //    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    //}
-
-    console.log(titulo);
-    console.log(categorias);
-    console.log(apiKey);
+    if (apiKey !== process.env.SELLER_API_KEY) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const productos = await ObtenerProductosBusqueda(titulo, categorias.map(c => c.toLowerCase()), Number(pagina), Number(cantidadPorPagina));
     const cantidadDeProductos = await ObtenerCantidadDeResultados(titulo, categorias.map(c => c.toLowerCase()));
-
-    console.log(`productos: ${JSON.stringify(productos)}`);
 
     return NextResponse.json({ items: productos, total: cantidadDeProductos });
 }

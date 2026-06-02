@@ -15,5 +15,6 @@ declare namespace NodeJS {
         POSTGRES_DATABASE: string;
         POSTGRES_URL_NO_SSL: string;
         POSTGRES_PRISMA_URL: string;
+		SELLER_API_KEY: string;
     }
 }

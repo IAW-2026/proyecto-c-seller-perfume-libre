@@ -1,5 +1,5 @@
 import { pool } from '@/lib/db/queries/connect';
-import { Producto, EstadoProducto, EstadoSubOrden } from '@/lib/db/schemes';
+import { Producto, EstadoProducto, EstadoSubOrden, SubOrden } from '@/lib/db/schemes';
 
 export async function ObtenerProductosBusqueda(titulo: string, categorias: string[], pagina : number, cantidadPorPagina: number): Promise<Producto[]> {
     const estado: EstadoProducto = 'activo'; 
@@ -60,6 +60,24 @@ export async function OrdenRetirada(id_orden: number, tracking_id: number, fecha
     );
 }
 
-export async function OrdenAprobada(id_orden: number, id_vendedor: string, productos: Producto[]) {
+export async function OrdenAprobada(id_orden: number, id_vendedor: string, productos_id: number[]) {
+    const estado: EstadoSubOrden = "aprobado"; 
+    for (const id of productos_id) {
+        await pool.query(`
+            INSERT INTO suborden (orden_id, vendedor_id, producto_id, cantidad, precio, estado)
+            VALUES ($1, $2, $3, $4, $5, $6)`,
+        [id_orden, id_vendedor, id, 44, 123, estado]
+        );
+    }
+}
 
+export async function ObtenerSubOrdenes(orden_id: number): Promise<SubOrden[]> {
+    const result = await pool.query<SubOrden>(`
+        SELECT *
+        FROM suborden
+        WHERE orden_id = $1`,
+    [orden_id]
+    );
+
+    return result.rows;
 }

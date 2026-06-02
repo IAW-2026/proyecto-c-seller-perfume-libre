@@ -65,7 +65,7 @@ export default function ModalPublicar() {
             setError("Titulo demasiado largo.");
             return false;
         }
-        if (descripcion.length > 50) {
+        if (descripcion.length > 150) {
             setError("Descripcion demasiada larga.");
             return false;
         }

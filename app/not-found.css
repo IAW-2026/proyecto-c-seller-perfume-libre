@@ -1,0 +1,36 @@
+.notFoundDivFondo {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-slate-100);
+    align-items: center;
+    width: stretch;
+    height: stretch;
+    justify-content: center;
+}
+
+.notFoundDivPrincipal {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-slate-300);
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+    .errorDivPrincipal p {
+        margin: 10px;
+        padding: 10px;
+    }
+
+.notFoundBoton { 
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 10px;
+    margin: 10px;
+}

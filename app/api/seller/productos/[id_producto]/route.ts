@@ -6,9 +6,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id_p
 
     const apiKey = request.headers.get("seller_api_key");
 
-    //if (apiKey !== "sas") {
-    //    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    //}
+    if (!apiKey) {
+        return NextResponse.json({ error: "Unauthorized", status: 401 });
+    }
+
+    if (apiKey !== process.env.SELLER_API_KEY) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     if (Number.isNaN(Number(id_producto))) {
         return NextResponse.json({ error: "Id Invalido" }, { status: 400 });

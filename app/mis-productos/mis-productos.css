@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+.mis-productos-skeleton { 
+    background-color: var(--color-slate-100); 
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap:40px;
+    padding:60px; 
+}
+
+.mis-productos-skeleton div {
+    background-color: var(--color-slate-300);
+    border-radius: 10px;
+    padding: 16px;
+    border-width: 2px;
+    border-color: black;
+    height: 450px;  
+}
+
+.productosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 40px;
+    padding: 60px;
+    background-color: var(--color-slate-100);
+    justify-items: center;
+    overflow-y: auto; 
+    height:stretch; 
+    align-content:start; 
+}
+ 
+.card-producto {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: var(--color-slate-300);
+    border-width: 2px;
+    border-color: black;
+    align-items: center;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    max-width: 400px; 
+    justify-content:flex-end; 
+}
+
+    .card-producto:hover {
+        box-shadow: 0px 5px 10px var(--color-slate-500);
+        transform: translateY(-2px);
+    }
+
+.card-producto-pausado {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: lightgray;
+    border-width: 2px;
+    border-color: black;
+    align-items: center;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    max-width: 400px;
+}
+
+    .card-producto-pausado:hover { 
+        box-shadow: 0px 5px 10px var(--color-slate-500);
+        transform: translateY(-2px);
+    }
+
+.card-producto-contenedor-imagen {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.card-producto-imagen {
+    object-fit: contain;
+}
+
+.card-producto-titulo {
+    width: 100%;
+    text-align: center;
+    font-size: large;
+    margin-top: 20px;
+}
+
+.card-producto-texto {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-bottom-width: 2px;
+    border-top-width: 2px;
+    border-color: var(--color-slate-400);
+}
+
+.card-producto-texto p {
+    margin: 8px;
+}
+
+.card-producto-boton { 
+    width: 60%; 
+    align-content: center;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: auto;
+}
+
+.card-producto-boton:hover {
+    background-color: var(--color-slate-600);
+} 

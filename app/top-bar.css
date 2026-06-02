@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+.topBar {
+    display: flex;
+    background-color: var(--color-slate-400);
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 10px;
+    border-color: var(--color-slate-700);
+    border-bottom-width: 4px;
+} 
+
+.topBarText {
+    font-size: x-large;
+}
+
+.topBar-boton {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--color-slate-100);
+    color: black;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-width: 2px;
+    border-color: var(--color-slate-700);
+}
+
+.topBar-botones {
+    display:flex;
+    flex-direction:row;
+    gap:10px;
+}
+
+.topBar-boton:hover { 
+    background-color: var(--color-slate-600);
+    color: white; 
+}
+
+.menuMobile {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--color-slate-200);
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+    z-index: 1000;
+    border-color: black;
+    border-width: 1px; 
+}
+
+.menuContainer { 
+    display: none;
+} 
+
+@media (max-width: 768px) {
+
+    .topBar-botones {
+        display: none;
+    }
+
+    .menuContainer {
+        display: block;
+    } 
+}
+
+.menuContainer {
+    position: relative;
+}
+
+.botonHamburguesa {
+    background-color: var(--color-slate-200);
+    border-color: black;
+    border-radius: 12px;
+    border-width: 1px;
+    padding: 10px;
+    color: var(--color-slate-700); 
+}
+
+.botonMenuMobile {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 16px; 
+}

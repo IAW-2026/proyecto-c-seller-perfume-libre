@@ -1,0 +1,165 @@
+.modalFondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background: var(--color-slate-100);
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 90vh;
+}
+
+.modalScroll {
+    overflow-y: auto;
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+}
+
+.modalFooter {
+
+}
+
+.modalSubdivisionRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-slate-300);
+    border-radius: 8px;
+}
+
+.modalSubDivisionColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-slate-300);
+    border-radius: 8px;
+}
+
+    .modalSubDivisionColumn p {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+.modalSubDivisionSpaceArround {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    background-color: var(--color-slate-300);
+    border-radius: 8px;
+}
+
+.modalBoton {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 10px;
+    margin: 10px;
+}
+
+    .modalBoton:hover {
+        background-color: var(--color-slate-600);
+    }
+
+.modalInputTexto {
+    color: white;
+    background-color: var(--color-slate-400);
+    border-radius: 8px;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    width:stretch;
+}
+
+.modalInputTextoMultiLinea {
+    color: white;
+    background-color: var(--color-slate-400);
+    border-radius: 8px;
+    margin: 10px;
+    padding: 10px; 
+    white-space: pre-wrap;
+    text-wrap: wrap; 
+    overflow:hidden;
+    resize:none;
+    width:stretch;
+}
+
+.categoriasContainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-slate-200);
+    margin: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    width:stretch;
+}
+
+.categoriaTag {
+    position: relative;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background-color: var(--color-slate-500);
+    margin: 10px;
+    text-align: center;
+    font-size: 13px;
+    color: white;
+}
+
+.inputCategoria {
+    color: white;
+    background-color: var(--color-slate-400);
+    border-radius: 8px;
+    text-align: center;
+    height: auto;
+    padding: 2px;
+}
+
+.categoriaBoton {
+    border-radius: 999px;
+    background-color: var(--color-slate-200);
+    border-color: black;
+    border-width: 1px;
+    font-size: 19px;
+    cursor: pointer;
+    padding: 0px 8px;
+}
+
+.categoriasEliminar {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    font-size: 12px;
+}
+
+.modalContenedorImagen {
+    position: relative;
+    max-width: 100px; 
+    max-height: 100px;
+    margin: 10px;
+}

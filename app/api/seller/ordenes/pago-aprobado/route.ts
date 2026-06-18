@@ -2,17 +2,17 @@ import { OrdenAprobada } from '@/app/api/queries';
 import { NextResponse } from "next/server";
 import { Producto } from '@/lib/db/schemes';
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
     const apiKey = request.headers.get("seller_api_key");
-    const id_pago = request.headers.get("id_pago");
     const id_orden = request.headers.get("id_orden");
+    const body = await request.json();
 
     if (!id_orden) {
         return NextResponse.json({ error: "No se especifica orden", status: 400 });
     }
 
-    if (!id_pago) {
-        return NextResponse.json({ error: "No se especifica id pago", status: 400 });
+    if (!body) {
+        return NextResponse.json({ error: "No se especifican productos", status: 400 });
     }
 
     if (!apiKey) {
@@ -34,7 +34,11 @@ export async function GET(request: Request) {
 
     // TODO: restar stock en tabla producto
 
-    await OrdenAprobada(Number(id_orden), "user_3EDuXdnJ2Hg5p7IUuHunI8Bm066", [4]);
+    //await OrdenAprobada(Number(id_orden), "user_3EDuXdnJ2Hg5p7IUuHunI8Bm066", [4]);
+
+    console.log(apiKey);
+    console.log(id_orden);
+    console.log(body);
 
     return NextResponse.json({ status: 200 });
 }

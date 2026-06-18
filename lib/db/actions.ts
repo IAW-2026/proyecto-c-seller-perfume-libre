@@ -1,13 +1,18 @@
 'use server'
 
 import { revalidatePath } from 'next/cache';
-import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery } from './queries/producto';
+import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery, ObtenerTodosLosProductosQuery, HardDeleteProductoQuery } from './queries/producto';
 import { SubOrden, Producto, Domicilio, Vendedor, EstadoProducto } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery } from './queries/vendedor';
+import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery, ObtenerTodosLosVendedoresQuery } from './queries/vendedor';
 import { CrearDomicilioQuery, ActualizarDomicilioQuery, ObtenerDomicilioQuery } from './queries/domicilio';
 import { PublicarProductoCategoriasQuery, ObtenerCategoriasDeProductosQuery, EditarCategoriasQuery } from './queries/categoria';
 import { ObtenerSubOrdenesQuery, OrdenListaParaRetirarQuery } from './queries/suborden';
+
+export type ProductosPorVendedor = {
+    vendedor: Vendedor;
+    productos: Producto[];
+};
 
 export async function EditarProducto(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) {
     if (!producto_id || !vendedor_id || !titulo || !descripcion || !precio || !precio || !stock || !estado || !imagen) {
@@ -376,4 +381,42 @@ export async function ElminarProducto(producto_id: number) {
 
 
     revalidatePath("/mis-productos");
+}
+
+export async function AdminProductosPorVendedor() {
+    const { userId, sessionClaims } = await auth();
+
+    if (!userId) {
+        throw Error("No se detecta usuario");
+    }
+
+    if (!(sessionClaims?.metadata?.role === "admin")) {
+        throw Error("Acceso denegado");
+    }
+
+    const vendedores = await ObtenerTodosLosVendedoresQuery();
+    const productos = await ObtenerTodosLosProductosQuery();
+
+    const datos: ProductosPorVendedor[] = vendedores.map(vendedor => ({
+        vendedor,
+        productos: productos.filter( p => p.vendedor_id === vendedor.clerk_id )
+    }));
+
+    return datos;
+}
+
+export async function AdminEliminarProducto(producto_id: number) {
+    const { userId, sessionClaims } = await auth();
+
+    if (!userId) {
+        throw Error("No se detecta usuario");
+    }
+
+    if (!(sessionClaims?.metadata?.role === "admin")) {
+        throw Error("Acceso denegado");
+    }
+
+    await HardDeleteProductoQuery(producto_id);
+
+    revalidatePath("/seller/admin");
 }

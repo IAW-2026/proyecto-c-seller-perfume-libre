@@ -67,3 +67,18 @@ export async function EliminarProductoQuery(producto_id: number) {
     [producto_id, estado]
     )
 }
+
+export async function ObtenerTodosLosProductosQuery() {
+    const result = await pool.query<Producto>(`
+        SELECT * FROM producto`
+    );
+
+    return result.rows;
+}
+
+export async function HardDeleteProductoQuery(producto_id: number) {
+    await pool.query(`
+        DELETE FROM producto
+        WHERE producto_id = $1
+`, [producto_id]);
+}

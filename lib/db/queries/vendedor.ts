@@ -29,3 +29,11 @@ export async function AsignarDomicilioQuery(user_id: string, domicilio_id: numbe
     [domicilio_id, user_id]
     );
 }
+
+export async function ObtenerTodosLosVendedoresQuery() {
+    const result = await pool.query<Vendedor>(
+        `SELECT * FROM vendedor`
+    );
+
+    return result.rows;
+}

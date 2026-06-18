@@ -8,6 +8,7 @@ import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery, Obtene
 import { CrearDomicilioQuery, ActualizarDomicilioQuery, ObtenerDomicilioQuery } from './queries/domicilio';
 import { PublicarProductoCategoriasQuery, ObtenerCategoriasDeProductosQuery, EditarCategoriasQuery } from './queries/categoria';
 import { ObtenerSubOrdenesQuery, OrdenListaParaRetirarQuery } from './queries/suborden';
+import { EsAdmin } from '../es-admin';
 
 export type ProductosPorVendedor = {
     vendedor: Vendedor;
@@ -390,7 +391,7 @@ export async function AdminProductosPorVendedor() {
         throw Error("No se detecta usuario");
     }
 
-    if (!(sessionClaims?.metadata?.role === "admin")) {
+    if (!await EsAdmin()) {
         throw Error("Acceso denegado");
     }
 
@@ -412,7 +413,7 @@ export async function AdminEliminarProducto(producto_id: number) {
         throw Error("No se detecta usuario");
     }
 
-    if (!(sessionClaims?.metadata?.role === "admin")) {
+    if (!await EsAdmin()) {
         throw Error("Acceso denegado");
     }
 

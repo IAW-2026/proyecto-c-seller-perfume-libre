@@ -22,16 +22,26 @@ export default function ModalPublicar() {
 
     async function subirImagen() {
         if (!imagenFile)
-            return;
+            return null;
 
         const formData = new FormData();
         formData.append("file", imagenFile);
 
-        const response = await fetch("api/seller/subir-imagen", { method: "POST", body: formData });
+        try {
+            const response = await fetch("api/seller/subir-imagen", { method: "POST", body: formData });
 
-        const data = await response.json();
+            if (!response.ok) {
+                setError("Error al subir la imagen.");
+                return null;
+            }
 
-        return data.url;
+            const data = await response.json();
+            return data.url;
+
+        } catch (error) {
+            setError("Error de conexion al subir la imagen.");
+            return null;
+        }
     }
 
     function verificarInput() {
@@ -61,11 +71,18 @@ export default function ModalPublicar() {
             return false;
         }
 
-        if (titulo.length > 20) {
+        // maximo 5mb
+        const MAX_SIZE = 5 * 1024 * 1024;
+        if (imagenFile.size > MAX_SIZE) {
+            setError("La imagen no puede exceder 5MB.");
+            return;
+        }
+
+        if (titulo.length > 40) {
             setError("Titulo demasiado largo.");
             return false;
         }
-        if (descripcion.length > 150) {
+        if (descripcion.length > 255) {
             setError("Descripcion demasiada larga.");
             return false;
         }
@@ -77,9 +94,19 @@ export default function ModalPublicar() {
         if (!verificarInput()) return;
 
         const url = await subirImagen();
-        await PublicarProducto(titulo, descripcion, Number(precio), Number(stock), "activo", url, categorias);
 
-        cerrarModalCrear();
+        if (!url)
+            return;
+
+        // TODO: eliminar imagen si falla publicar producto.
+        const result = await PublicarProducto(titulo, descripcion, Number(precio), Number(stock), url, categorias);
+
+        if (result.success) {
+            cerrarModalCrear();
+        }
+        else {
+            setError(result.error!.description);
+        }
     }
 
     return (
@@ -124,6 +151,11 @@ export default function ModalPublicar() {
 
                                             if (!file)
                                                 return;
+
+                                            if (!file.type.startsWith('image/')) {
+                                                setError("El archivo debe ser una imagen");
+                                                return;
+                                            }
 
                                             setImagenFile(file);
 

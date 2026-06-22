@@ -5,6 +5,7 @@ import './panel-admin.css'
 import { AdminEliminarProducto, Producto, ProductosPorVendedor } from '@/lib/db/db'
 import CardProducto from './card-producto';
 import { useState } from 'react';
+import '../../mis-productos/modal.css';
 
 interface Props {
     productosPorVendedor: ProductosPorVendedor[];
@@ -20,6 +21,7 @@ export default function PanelAdmin({ productosPorVendedor }: Props) {
     const [vendedorAbierto, setVendedorAbierto] = useState<number | null>(null);
     const [vendedorSeleccionado, setVendedorSeleccionado] = useState<number | null>(null);
     const [productosSeleccionados, setProductosSeleccionados] = useState<ProductoSeleccionado[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     async function EnviarOrden() {
 
@@ -43,7 +45,10 @@ export default function PanelAdmin({ productosPorVendedor }: Props) {
     }
 
     async function EliminarProducto(producto_id: number) {
-        await AdminEliminarProducto(producto_id);
+        const result = await AdminEliminarProducto(producto_id);
+
+        if (!result.success)
+            setError(result.error!.description);
     }
 
     function agregarProducto(index: number) {
@@ -78,80 +83,101 @@ export default function PanelAdmin({ productosPorVendedor }: Props) {
     }
 
     return (
-        <div className="fondo-admin">
-            <div className="fondo-productos-admin">
+        <>
+            {error && (
+                <div style={{ zIndex: 10 }} className="modalFondo">
 
-                <b style={{marginBottom:"20px"} }>Eliminar Productos</b>
+                    <div className="modal">
 
-                {
-                    productosPorVendedor.map(({ vendedor, productos }, index) => (
-                        <div key={vendedor.clerk_id} style={{width:"stretch"} }>
+                        <p style={{ textAlign: "center" }}>{`${error}`}</p>
 
-                            <button
-                                className="boton-vendedor"
-                                onClick={() => {
-                                    if (vendedorAbierto===null) {
-                                        if (vendedorSeleccionado !== index) {
-                                            setProductosSeleccionados([]);
-                                            setVendedorSeleccionado(index);
-                                            setVendedorAbierto(index);
+                        <button
+                            className="modalBoton"
+                            onClick={() => { setError(null); }}
+                        >
+                            OK
+                        </button>
+
+                    </div>
+
+                </div>
+            )}
+
+            <div className="fondo-admin">
+                <div className="fondo-productos-admin">
+
+                    <b style={{ marginBottom: "20px" }}>Eliminar Productos</b>
+
+                    {
+                        productosPorVendedor.map(({ vendedor, productos }, index) => (
+                            <div key={vendedor.clerk_id} style={{ width: "stretch" }}>
+
+                                <button
+                                    className="boton-vendedor"
+                                    onClick={() => {
+                                        if (vendedorAbierto === null) {
+                                            if (vendedorSeleccionado !== index) {
+                                                setProductosSeleccionados([]);
+                                                setVendedorSeleccionado(index);
+                                                setVendedorAbierto(index);
+                                            }
+                                            else {
+                                                setVendedorAbierto(index);
+                                            }
                                         }
                                         else {
-                                            setVendedorAbierto(index);
+                                            if (vendedorSeleccionado !== index) {
+                                                setProductosSeleccionados([]);
+                                                setVendedorSeleccionado(index);
+                                            }
+                                            setVendedorAbierto(vendedorAbierto === index ? null : index);
                                         }
-                                    }
-                                    else {
-                                        if (vendedorSeleccionado !== index) {
-                                            setProductosSeleccionados([]);
-                                            setVendedorSeleccionado(index);
-                                        }
-                                        setVendedorAbierto(vendedorAbierto === index ? null : index);
-                                    }
-                                }}
-                            >
-                                {vendedorAbierto === index ? "˅" : "˃"} {vendedor.nombre} {vendedor.apellido}
-                            </button>
+                                    }}
+                                >
+                                    {vendedorAbierto === index ? "˅" : "˃"} {vendedor.nombre} {vendedor.apellido}
+                                </button>
 
-                            {vendedorAbierto === index && (
-                                <div className="contenedor-cards">
-                                    {productos.map((producto, productoIndex) => (
-                                        <CardProducto
-                                            key={producto.producto_id}
-                                            producto={producto}
-                                            agregarAOrden={() => agregarProducto(productoIndex)}
-                                            eliminarProducto={async () => { await EliminarProducto(producto.producto_id) }}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                                {vendedorAbierto === index && (
+                                    <div className="contenedor-cards">
+                                        {productos.map((producto, productoIndex) => (
+                                            <CardProducto
+                                                key={producto.producto_id}
+                                                producto={producto}
+                                                agregarAOrden={() => agregarProducto(productoIndex)}
+                                                eliminarProducto={async () => { await EliminarProducto(producto.producto_id) }}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
 
+                            </div>
+                        ))
+                    }
+
+                </div>
+
+                <div className="orden-admin">
+
+                    <b>Orden a crear</b>
+
+                    {productosSeleccionados.map(({ producto, cantidad }) => (
+                        <div className="div-ordenes" key={producto.producto_id}>
+                            <p>{`Titulo: ${producto.titulo}`}</p>
+                            <p>{`Cantidad: ${cantidad}`}</p>
                         </div>
-                    ))
-                }
+                    ))}
 
+                    {productosSeleccionados.length > 0 && (
+                        <button
+                            className="boton"
+                            onClick={async () => EnviarOrden()}
+                        >
+                            Enviar orden
+                        </button>
+                    )}
+
+                </div>
             </div>
-
-            <div className="orden-admin">
-
-                <b>Orden a crear</b>
-
-                {productosSeleccionados.map(({producto, cantidad }) => (
-                    <div className="div-ordenes" key={producto.producto_id}>
-                        <p>{`Titulo: ${producto.titulo}`}</p>
-                        <p>{`Cantidad: ${cantidad}`}</p>
-                    </div>
-                ))}
-
-                {productosSeleccionados.length > 0 && (
-                    <button
-                        className="boton"
-                        onClick={async () => EnviarOrden()}
-                    >
-                    Enviar orden
-                    </button>
-                )}
-
-            </div>
-        </div>
+        </>
     );
 }

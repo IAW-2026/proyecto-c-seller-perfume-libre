@@ -11,6 +11,7 @@ interface Props {
 }
 
 export default function CardProducto({ producto, agregarAOrden, eliminarProducto }: Props) {
+
     let color = "green";
     if (producto.estado === "borrado")
         color = "red";

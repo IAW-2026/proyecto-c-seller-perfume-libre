@@ -83,13 +83,24 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
             return;
         }
 
-        await EditarProducto(producto.producto_id, producto.vendedor_id, titulo, descripcion, Number(precio), producto.stock + Number(agregarStock), producto.estado, producto.imagen);
+        const result = await EditarProducto(producto.producto_id, producto.vendedor_id, titulo, descripcion, Number(precio), producto.stock + Number(agregarStock), producto.imagen);
 
-        if (!categoriasIguales(categoriasDeProducto, categorias)) {
-            await EditarCategorias(producto.producto_id, categorias);
+        if (result.success) {
+            if (!categoriasIguales(categoriasDeProducto, categorias)) {
+                const result2 = await EditarCategorias(producto.producto_id, categorias);
+
+                if (result2.success) {
+                    cerrar();
+                } else {
+                    setError(result2.error!.description!);
+                }
+            }
+
+            cerrar();
         }
-
-        cerrar();
+        else {
+            setError(result.error!.description!);
+        }
     }
 
     return (

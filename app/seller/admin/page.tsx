@@ -1,7 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
+﻿import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import PanelAdmin from './panel-admin'
-import { Vendedor, Producto, AdminProductosPorVendedor } from '@/lib/db/db'
+import { Vendedor, Producto, AdminProductosPorVendedor, ActionResponse } from '@/lib/db/db'
 import { EsAdmin } from '@/lib/es-admin';
 
 
@@ -12,9 +12,24 @@ export default async function Page() {
     if (!admin)
         redirect("/");
 
-    const productosPorVendedor = await AdminProductosPorVendedor();
+    const productosPorVendedorResult = await AdminProductosPorVendedor();
+
+    if (!productosPorVendedorResult.success) {
+        return (
+            <div className="errorDivFondo">
+
+                <div className="errorDivPrincipal">
+
+                    <p>Ocurrió el siguiente error</p>
+                    <b>{productosPorVendedorResult.error!.description}</b>
+
+                </div>
+
+            </div>
+        );
+    }
 
     return (
-        <PanelAdmin productosPorVendedor={productosPorVendedor} />
+        <PanelAdmin productosPorVendedor={productosPorVendedorResult.data!} />
     );
 }

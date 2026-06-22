@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ObtenerProducto } from '@/lib/db/db'
+import { ObtenerProducto } from '../../../queries'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id_producto: string }> }) {
     const { id_producto } = await params;

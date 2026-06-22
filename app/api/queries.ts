@@ -81,3 +81,13 @@ export async function ObtenerSubOrdenes(orden_id: number): Promise<SubOrden[]> {
 
     return result.rows;
 }
+
+export async function ObtenerProducto(producto_id: number) {
+    const result = await pool.query<Producto>(`
+        SELECT * FROM producto
+        WHERE producto_id = $1`,
+        [producto_id]
+    );
+
+    return result.rows[0];
+}

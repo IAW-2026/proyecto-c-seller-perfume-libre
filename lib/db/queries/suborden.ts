@@ -11,13 +11,13 @@ export async function ObtenerSubOrdenesQuery(vendedor_id: string) : Promise<SubO
     return result.rows;
 }
 
-export async function OrdenListaParaRetirarQuery(suborden_id: number) {
+export async function OrdenListaParaRetirarQuery(orden_id: number) {
     const estado: EstadoSubOrden = 'preparado';
     await pool.query(`
         UPDATE suborden
         SET estado=$1
-        WHERE suborden_id = $2`,
-    [estado, suborden_id]
+        WHERE orden_id = $2`,
+    [estado, orden_id]
     );
 }
 
@@ -40,4 +40,16 @@ export async function CrearSubOrdenQuery(vendedor_id: string, producto_id: numbe
     );
 
     return result.rows[0];
+}
+
+export async function ObtenerOrdenesEnPreparacionQuery(vendedor_id: string) {
+    const estado: EstadoSubOrden = 'en_preparacion';
+
+    const result = await pool.query<SubOrden>(`
+        SELECT * from suborden
+        WHERE vendedor_id = $1 AND estado = $2`, 
+        [vendedor_id, estado]
+    );
+
+    return result.rows;
 }

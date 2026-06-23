@@ -49,8 +49,13 @@ export default function ModalDomicilio({ forzarIngresarDireccion, domicilio }: P
             cerrarModalDomicilio();
         }
         else {
-            await ActualizarDomicilio({domicilio_id: domicilio.domicilio_id, calle: calle, provincia:provincia, ciudad:ciudad, codigo_postal:Number(codigo_postal)});
-            cerrarModalDomicilio();
+            const result = await ActualizarDomicilio({ domicilio_id: domicilio.domicilio_id, calle: calle, provincia: provincia, ciudad: ciudad, codigo_postal: Number(codigo_postal) });
+
+            if (result.success) {
+                cerrarModalDomicilio();
+            } else {
+                setError(result.error!.description);
+            }
         }
     }
 

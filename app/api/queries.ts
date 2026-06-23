@@ -61,7 +61,7 @@ export async function OrdenRetirada(id_orden: number, tracking_id: number, fecha
 }
 
 export async function OrdenAprobada(id_orden: number, id_vendedor: string, productos_id: number[]) {
-    const estado: EstadoSubOrden = "aprobado"; 
+    const estado: EstadoSubOrden = "en_preparacion"; 
     for (const id of productos_id) {
         await pool.query(`
             INSERT INTO suborden (orden_id, vendedor_id, producto_id, cantidad, precio, estado)
@@ -80,4 +80,14 @@ export async function ObtenerSubOrdenes(orden_id: number): Promise<SubOrden[]> {
     );
 
     return result.rows;
+}
+
+export async function ObtenerProducto(producto_id: number) {
+    const result = await pool.query<Producto>(`
+        SELECT * FROM producto
+        WHERE producto_id = $1`,
+        [producto_id]
+    );
+
+    return result.rows[0];
 }

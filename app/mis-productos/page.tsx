@@ -1,10 +1,29 @@
-import { ObtenerMisProductos, ObtenerSubOrdenes, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio, ObtenerCategoriasDeProductos } from '@/lib/db/db';
+﻿import { ActionResponse, ObtenerMisProductos, ObtenerSubOrdenes, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio, ObtenerCategoriasDeProductos, ObtenerProductosPorOrden } from '@/lib/db/db';
 import ProductosCliente from './productos-cliente';
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation';
-import { DomicilioInvalido } from '@/lib/db/schemes'
+import { DomicilioInvalido, Producto } from '@/lib/db/schemes'
+import './error.css';
+import 'next/navigation'
+
+function error(error: string) {
+    return (
+        <div className="errorDivFondo">
+
+            <div className="errorDivPrincipal">
+
+                <p>Ocurrió el siguiente error</p>
+                <b>{error}</b>
+
+            </div>
+
+        </div>
+    );
+}
 
 export default async function Page() {
+
+    // TOOO: reafactor logica
 
     const { userId } = await auth();
     const user = await currentUser();
@@ -15,7 +34,12 @@ export default async function Page() {
     if (!user)
         redirect("/sign-in");
 
-    const vendedor = await ObtenerVendedor();
+    const vendedorResult = await ObtenerVendedor();
+
+    if (!vendedorResult.success)
+        return error(vendedorResult.error!.description);
+
+    const vendedor = vendedorResult.data!;
 
     const forzarIngresarDireccion = vendedor.domicilio_id === null;
 
@@ -24,19 +48,37 @@ export default async function Page() {
         domicilio = DomicilioInvalido;
     }
     else {
-        domicilio = await ObtenerDomicilio(vendedor.domicilio_id);
+        const domicilioResult = await ObtenerDomicilio(vendedor.domicilio_id);
+
+        if (!domicilioResult.success)
+            return error(domicilioResult.error!.description);
+
+        domicilio = domicilioResult.data!;
     }
 
-    const productos = await ObtenerMisProductos();
-    const productosCategorias = await ObtenerCategoriasDeProductos(productos.map(p => p.producto_id));
+    const productosResult = await ObtenerMisProductos();
 
-    const subOrdenes = await ObtenerSubOrdenes();
-    const productosOrdenes = await ObtenerProductos(subOrdenes.map(subOrden => subOrden.producto_id));
+    if (!productosResult.success)
+        return error(productosResult.error!.description);
 
-    console.log(subOrdenes);
-    console.log(productosOrdenes);
+    const productos = productosResult.data!;
+
+    const productosCategoriasResult = await ObtenerCategoriasDeProductos(productos.map(p => p.producto_id));
+
+    if (!productosCategoriasResult.success)
+        return error(productosCategoriasResult.error!.description);
+
+    const productosCategorias = productosCategoriasResult.data!;
+
+    const productosPorOrdenResult = await ObtenerProductosPorOrden();
+
+    if (!productosPorOrdenResult.success) {
+        return error(productosPorOrdenResult.error!.description);
+    }
+
+    const productosPorOrden = productosPorOrdenResult.data!;
 
     return (
-        <ProductosCliente productos={productos} ordenes={subOrdenes} productosOrdenes={productosOrdenes} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias = {productosCategorias} />
+        <ProductosCliente productos={productos} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias={productosCategorias} productosPorOrden={productosPorOrden} />
     )
 }

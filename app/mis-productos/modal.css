@@ -163,3 +163,20 @@
     max-height: 100px;
     margin: 10px;
 }
+
+.botonOrden {
+    background-color: var(--color-slate-500);
+    color: white;
+    width: stretch;
+    padding: 5px;
+    transition: background-color 0.2s;
+    min-width: 200px;
+}
+
+.separadorOrden {
+    width: stretch;
+    border-color: var(--color-slate-600);
+    border-width: 1px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

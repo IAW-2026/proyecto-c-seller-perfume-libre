@@ -17,14 +17,6 @@ export default function CardOrden({ idOrden, titulo, cantidad, imagen }: Props) 
 
     const [error, setError] = useState<string | null>(null);
 
-    async function ordenHecha(idOrden: number) {
-        const result = await OrdenAPrepararHecha(idOrden);
-
-        if (!result.success) {
-            setError(result.error!.description);
-        }
-    }
-
     return (
         <>
             {error && (
@@ -58,10 +50,6 @@ export default function CardOrden({ idOrden, titulo, cantidad, imagen }: Props) 
                 </div>
                 <p>{titulo}</p>
                 <p>{`Cantidad: ${cantidad}`}</p>
-                <button className={styles.boton} onClick={async () => { await ordenHecha(idOrden); }}
-                >
-                    Confirmar Orden Hecha
-                </button>
             </div>
         </>
     );

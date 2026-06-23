@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Producto, EditarProducto, EditarCategorias } from '@/lib/db/db';
 import './modal.css';
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useAppContext } from "../appContext";
 
 interface Props {
     producto: Producto;
@@ -20,8 +21,7 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
     const [precio, setPrecio] = useState(producto.precio.toString());
     const [agregarStock, setAgregarStock] = useState("0");
     const [categorias, setCategorias] = useState<string[]>(categoriasDeProducto);
-    const [error, setError] = useState<string | null>(null);
-
+    const { abrirModalError } = useAppContext();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     function ajustarAltura() {
         if (!textareaRef.current) return;
@@ -45,25 +45,25 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
 
     function verificarInput() {
         if (titulo === "") {
-            setError("Ingrese un titulo.");
+            abrirModalError("Ingrese un titulo.");
             return false;
         }
         if (precio === "" || precio === "0") {
-            setError("Ingrese un precio.");
+            abrirModalError("Ingrese un precio.");
             return false;
         }
         if (agregarStock === "") {
-            setError("Ingrese un agregar stock");
+            abrirModalError("Ingrese un agregar stock");
             return false;
         }
 
         if (Number.isNaN(Number(precio))) {
-            setError("Ingrese un precio valido");
+            abrirModalError("Ingrese un precio valido");
             return false;
         }
 
         if (Number.isNaN(Number(agregarStock))) {
-            setError("Ingrese un stock valido");
+            abrirModalError("Ingrese un stock valido");
             return false;
         }
 
@@ -92,209 +92,186 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                 if (result2.success) {
                     cerrar();
                 } else {
-                    setError(result2.error!.description!);
+                    abrirModalError(result2.error!.description!);
                 }
             }
 
             cerrar();
         }
         else {
-            setError(result.error!.description!);
+            abrirModalError(result.error!.description!);
         }
     }
 
     return (
 
-        <>
-            {error && (
-                <div className="modalFondo">
+        <div className="modalFondo">
 
-                    <div className="modal">
+            <div className="modal">
 
-                        <p style={{ textAlign: "center" }}>{`${error}`}</p>
+                <div className="modalScroll">
+
+                    <div className="modalSubDivisionSpaceArround">
+
+                        <div className="modalContenedorImagen">
+
+                            <Image
+                                src={producto.imagen}
+                                alt={producto.titulo}
+                                sizes="100px"
+                                width={100}
+                                height={100}
+                                style={{ width: "auto", height: "100px" }}
+                            />
+
+                        </div>
+
+                    </div>
+
+                    <div className="modalSubDivisionColumn">
+
+                        <p>Titulo</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="text"
+                            value={titulo}
+                            onChange={(e) => setTitulo(e.target.value)}
+                        />
+
+                        <p>Descripcion</p>
+
+                        <textarea
+                            ref={textareaRef}
+                            className="modalInputTextoMultiLinea"
+                            value={descripcion}
+                            onChange={(e) => { setDescripcion(e.target.value); }}
+                        />
+
+                        <p>Precio</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="number"
+                            value={precio}
+                            onChange={(e) => setPrecio(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
+                        />
+
+                        <p>Agregar Stock</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={agregarStock}
+                            onChange={(e) => setAgregarStock(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
+                        />
+
+                        <p>Categorias</p>
+
+                        <div className="categoriasContainer">
+
+                            {categorias.map((categoria) => (
+                                <div key={categoria} className="categoriaTag">
+
+                                    {`${categoria}`}
+
+                                    <button
+                                        className="categoriasEliminar"
+                                        onClick={() => { setCategorias(categorias.filter((e) => e !== categoria)); }}
+                                    >
+                                        x
+                                    </button>
+
+                                </div>
+                            )
+                            )}
+
+                            {!agregandoCategoria && (
+                                <button
+                                    className="categoriaBoton"
+                                    onClick={() => setAgregandoCategoria(true)}
+                                >
+                                    +
+                                </button>
+
+                            )}
+
+                            {agregandoCategoria && (
+                                <input
+                                    className="inputCategoria"
+                                    size={Math.min(Math.max(nuevaCategoria.length, 1), 20)}
+                                    autoFocus
+                                    value={nuevaCategoria}
+                                    onChange={(e) => {
+                                        if (e.target.value.length >= 20) {
+                                            e.target.value = nuevaCategoria;
+                                        } else {
+                                            setNuevaCategoria(e.target.value);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Escape") {
+                                            setAgregandoCategoria(false);
+                                            setNuevaCategoria("");
+                                        }
+
+                                        if (e.key === "Backspace" && nuevaCategoria === "") {
+                                            setAgregandoCategoria(false);
+                                            setNuevaCategoria("");
+                                        }
+
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+
+                                            if (nuevaCategoria.trim() === "") {
+                                                return;
+                                            }
+
+                                            if (!categorias.includes(nuevaCategoria)) {
+                                                setCategorias([...categorias, nuevaCategoria.trim()]);
+
+                                                setNuevaCategoria("");
+
+                                                setAgregandoCategoria(false);
+                                            }
+                                        }
+                                    }}
+                                />
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="modalFooter">
+                    <div className="modalSubDivisionSpaceArround">
 
                         <button
                             className="modalBoton"
-                            onClick={() => { setError(null); }}
+                            onClick={async () => { await guardar(); }}
                         >
-                            OK
+                            Guardar
+                        </button>
+
+                        <button
+                            className="modalBoton"
+                            onClick={cerrar}
+                        >
+                            Cancelar
                         </button>
 
                     </div>
-
                 </div>
-            )}
 
-            {!error && (
-                <div className="modalFondo">
+            </div>
 
-                    <div className="modal">
-
-                        <div className="modalScroll">
-
-                            <div className="modalSubDivisionSpaceArround">
-
-                                <div className="modalContenedorImagen">
-
-                                    <Image
-                                        src={producto.imagen}
-                                        alt={producto.titulo}
-                                        sizes="100px"
-                                        width={100}
-                                        height={100 }
-                                        style={{width: "auto",height: "100px"}}
-                                    />
-
-                                </div>
-
-                            </div>
-
-                            <div className="modalSubDivisionColumn">
-
-                                <p>Titulo</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="text"
-                                    value={titulo}
-                                    onChange={(e) => setTitulo(e.target.value)}
-                                />
-
-                                <p>Descripcion</p>
-
-                                <textarea
-                                    ref={textareaRef}
-                                    className="modalInputTextoMultiLinea"
-                                    value={descripcion}
-                                    onChange={(e) => {setDescripcion(e.target.value);}}
-                                />
-
-                                <p>Precio</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="number"
-                                    value={precio}
-                                    onChange={(e) => setPrecio(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
-                                />
-
-                                <p>Agregar Stock</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="number"
-                                    min="0"
-                                    step="1"
-                                    value={agregarStock }
-                                    onChange={(e) => setAgregarStock(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
-                                />
-
-                                <p>Categorias</p>
-
-                                <div className="categoriasContainer">
-
-                                    {categorias.map((categoria) => (
-                                        <div key={categoria} className="categoriaTag">
-
-                                            {`${categoria}`}
-
-                                            <button
-                                                className="categoriasEliminar"
-                                                onClick={() => { setCategorias(categorias.filter((e) => e !== categoria)); }}
-                                            >
-                                                x
-                                            </button>
-
-                                        </div>
-                                    )
-                                    )}
-
-                                    {!agregandoCategoria && (
-                                        <button
-                                            className="categoriaBoton"
-                                            onClick={() => setAgregandoCategoria(true)}
-                                        >
-                                            +
-                                        </button>
-
-                                    )}
-
-                                    {agregandoCategoria && (
-                                        <input
-                                            className="inputCategoria"
-                                            size={Math.min(Math.max(nuevaCategoria.length, 1), 20)}
-                                            autoFocus
-                                            value={nuevaCategoria}
-                                            onChange={(e) => {
-                                                if (e.target.value.length >= 20) {
-                                                    e.target.value = nuevaCategoria;
-                                                } else {
-                                                    setNuevaCategoria(e.target.value);
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Escape") {
-                                                    setAgregandoCategoria(false);
-                                                    setNuevaCategoria("");
-                                                }
-
-                                                if (e.key === "Backspace" && nuevaCategoria === "") {
-                                                    setAgregandoCategoria(false);
-                                                    setNuevaCategoria("");
-                                                }
-
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
-
-                                                    if (nuevaCategoria.trim() === "") {
-                                                        return;
-                                                    }
-
-                                                    if (!categorias.includes(nuevaCategoria)) {
-                                                        setCategorias([...categorias, nuevaCategoria.trim()]);
-
-                                                        setNuevaCategoria("");
-
-                                                        setAgregandoCategoria(false);
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    )}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div className="modalFooter">
-                            <div className="modalSubDivisionSpaceArround">
-
-                                <button
-                                    className="modalBoton"
-                                    onClick={async () => { await guardar(); }}
-                                >
-                                    Guardar
-                                </button>
-
-                                <button
-                                    className="modalBoton"
-                                    onClick={cerrar}
-                                >
-                                    Cancelar
-                                </button>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-            )}
-        </>
+        </div>
 
     );
 }

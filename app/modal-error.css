@@ -1,0 +1,37 @@
+.modalErrorFondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalError {
+    background: var(--color-slate-100);
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 90vh;
+    border-width: 1px;
+    border-color: black;
+}
+
+.modalErrorBoton {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 10px;
+    margin: 10px;
+}
+
+    .modalErrorBoton:hover {
+        background-color: var(--color-slate-600);
+    }

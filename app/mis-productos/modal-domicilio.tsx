@@ -14,25 +14,24 @@ export default function ModalDomicilio({ forzarIngresarDireccion, domicilio }: P
     const [ciudad, setCiudad] = useState(forzarIngresarDireccion ? "" : domicilio.ciudad);
     const [provincia, setProvincia] = useState(forzarIngresarDireccion ? "" : domicilio.provincia);
     const [codigo_postal, setCodigo_postal] = useState(forzarIngresarDireccion ? "" : domicilio.codigo_postal.toString());
-    const [error, setError] = useState<string | null>(null);
 
-    const { cerrarModalDomicilio } = useAppContext();
+    const { cerrarModalDomicilio, abrirModalError } = useAppContext();
 
     function verificarInput() {
         if (calle === "") { 
-            setError("Ingrese una calle.");
+            abrirModalError("Ingrese una calle.");
             return false;
         }
         if (ciudad === "") {
-            setError("Ingrese una ciudad.");
+            abrirModalError("Ingrese una ciudad.");
             return false;
         }
         if (provincia === "") {
-            setError("Ingrese una provincia.");
+            abrirModalError("Ingrese una provincia.");
             return false;
         }
         if (codigo_postal === "") {
-            setError("Ingrese un codigo postal.");
+            abrirModalError("Ingrese un codigo postal.");
             return false;
         }
 
@@ -54,115 +53,92 @@ export default function ModalDomicilio({ forzarIngresarDireccion, domicilio }: P
             if (result.success) {
                 cerrarModalDomicilio();
             } else {
-                setError(result.error!.description);
+                abrirModalError(result.error!.description);
             }
         }
     }
 
     return (
-        <>
-            {error && (
-                <div className="modalFondo">
+        <div className="modalFondo">
 
-                    <div className="modal">
+            <div className="modal">
 
-                        <p style={{ textAlign: "center" }}>{`${error}`}</p>
+                <div className="modalScroll">
+
+                    {forzarIngresarDireccion && (
+                        <div className="modalSubDivisionColumn">
+
+                            <b style={{ textAlign: "center", margin: "10px" }}>Antes de empezar a publicar debemos saber tu ubicacion</b>
+                        </div>
+                    )}
+
+                    <div className="modalSubDivisionColumn">
+
+                        <p>Calle</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="text"
+                            value={calle}
+                            onChange={(e) => setCalle(e.target.value)}
+                        />
+
+                        <p>Ciudad</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="text"
+                            value={ciudad}
+                            onChange={(e) => setCiudad(e.target.value)}
+                        />
+
+                        <p>Provincia</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="text"
+                            value={provincia}
+                            onChange={(e) => setProvincia(e.target.value)}
+                        />
+
+                        <p>Codigo Postal</p>
+
+                        <input
+                            className="modalInputTexto"
+                            type="number"
+                            value={codigo_postal}
+                            onChange={(e) => setCodigo_postal(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
+                        />
+
+                    </div>
+                </div>
+
+                <div className="modalFooter">
+                    <div className="modalSubDivisionSpaceArround">
 
                         <button
                             className="modalBoton"
-                            onClick={() => { setError(null); }}
+                            onClick={async () => { await confirmar(); }}
                         >
-                            OK
+                            Confirmar
                         </button>
 
-                    </div>
-
-                </div>
-            )}
-
-            {!error && (
-                <div className="modalFondo">
-
-                    <div className="modal">
-
-                        <div className="modalScroll">
-
-                            {forzarIngresarDireccion && (
-                                <div className="modalSubDivisionColumn">
-
-                                    <b style={{ textAlign: "center", margin:"10px"}}>Antes de empezar a publicar debemos saber tu ubicacion</b>
-                                </div>
-                            )}
-
-                            <div className="modalSubDivisionColumn">
-
-                                <p>Calle</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="text"
-                                    value={calle }
-                                    onChange={(e) => setCalle(e.target.value)}
-                                />
-
-                                <p>Ciudad</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="text"
-                                    value={ciudad }
-                                    onChange={(e) => setCiudad(e.target.value)}
-                                />
-
-                                <p>Provincia</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="text"
-                                    value={provincia }
-                                    onChange={(e) => setProvincia(e.target.value)}
-                                />
-
-                                <p>Codigo Postal</p>
-
-                                <input
-                                    className="modalInputTexto"
-                                    type="number"
-                                    value={codigo_postal }
-                                    onChange={(e) => setCodigo_postal(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "e" || e.key === "E" || e.key === "+" || e.key === "-") { e.preventDefault(); } }}
-                                />
-
-                            </div>
-                        </div>
-
-                        <div className="modalFooter">
-                            <div className="modalSubDivisionSpaceArround">
-
-                                <button
-                                    className="modalBoton"
-                                    onClick={async () => { await confirmar(); }}
-                                >
-                                    Confirmar
-                                </button>
-
-                                {!forzarIngresarDireccion && (
-                                    <button
-                                        className="modalBoton"
-                                        onClick={cerrarModalDomicilio}
-                                    >
-                                        Cancelar
-                                    </button>
-                                )}
-
-                            </div>
-
-                        </div>
+                        {!forzarIngresarDireccion && (
+                            <button
+                                className="modalBoton"
+                                onClick={cerrarModalDomicilio}
+                            >
+                                Cancelar
+                            </button>
+                        )}
 
                     </div>
 
                 </div>
-            )}
-        </>
+
+            </div>
+
+        </div>
     );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CardProducto from "./card-producto";
 import './mis-productos.css';
-import { Producto, SubOrden, Domicilio} from '@/lib/db/db';
+import { Producto, SubOrden, Domicilio, ProductosPorOrden} from '@/lib/db/db';
 import { useAppContext } from '@/app/appContext';
 import ModalEditar from './modal-editar';
 import ModalPublicar from './modal-publicar';
@@ -12,14 +12,13 @@ import ModalDomicilio from './modal-domicilio';
 
 interface Props {
     productos: Producto[];
-    ordenes: SubOrden[];
-    productosOrdenes: Producto[];
     productosCategorias: Record<number, string[]>;
     forzarIngresarDireccion: boolean;
     domicilio: Domicilio;
+    productosPorOrden: ProductosPorOrden[];
 }
 
-export default function ProductosCliente({ productos, ordenes, productosOrdenes, productosCategorias, forzarIngresarDireccion, domicilio }: Props) {
+export default function ProductosCliente({ productos, productosCategorias, forzarIngresarDireccion, domicilio, productosPorOrden }: Props) {
 
     const { modalCrearAbierto, modalOrdenesAbierto, modalDomicilioAbierto } = useAppContext();
     const [productoEditando, setProductoEditando] = useState<Producto | null>(null);
@@ -56,8 +55,7 @@ export default function ProductosCliente({ productos, ordenes, productosOrdenes,
 
             {modalOrdenesAbierto && (
                 <ModalOrdenes
-                    ordenes={ordenes}
-                    productosOrdenes={productosOrdenes}
+                    productosPorOrden={productosPorOrden}
                 />
             )}
 

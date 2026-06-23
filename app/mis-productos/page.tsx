@@ -1,8 +1,8 @@
-﻿import { ActionResponse, ObtenerMisProductos, ObtenerSubOrdenes, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio, ObtenerCategoriasDeProductos } from '@/lib/db/db';
+﻿import { ActionResponse, ObtenerMisProductos, ObtenerSubOrdenes, ObtenerProductos, ObtenerVendedor, ObtenerDomicilio, ObtenerCategoriasDeProductos, ObtenerProductosPorOrden } from '@/lib/db/db';
 import ProductosCliente from './productos-cliente';
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation';
-import { DomicilioInvalido } from '@/lib/db/schemes'
+import { DomicilioInvalido, Producto } from '@/lib/db/schemes'
 import './error.css';
 import 'next/navigation'
 
@@ -70,21 +70,15 @@ export default async function Page() {
 
     const productosCategorias = productosCategoriasResult.data!;
 
-    const subOrdenesResult = await ObtenerSubOrdenes();
+    const productosPorOrdenResult = await ObtenerProductosPorOrden();
 
-    if (!subOrdenesResult.success)
-        return error(subOrdenesResult.error!.description);
+    if (!productosPorOrdenResult.success) {
+        return error(productosPorOrdenResult.error!.description);
+    }
 
-    const subOrdenes = subOrdenesResult.data!;
-
-    const productosOrdenesResult = await ObtenerProductos(subOrdenes.map(subOrden => subOrden.producto_id));
-
-    if (!productosOrdenesResult.success)
-        return error(productosOrdenesResult.error!.description);
-
-    const productosOrdenes = productosOrdenesResult.data!;
+    const productosPorOrden = productosPorOrdenResult.data!;
 
     return (
-        <ProductosCliente productos={productos} ordenes={subOrdenes} productosOrdenes={productosOrdenes} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias={productosCategorias} />
+        <ProductosCliente productos={productos} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias={productosCategorias} productosPorOrden={productosPorOrden} />
     )
 }

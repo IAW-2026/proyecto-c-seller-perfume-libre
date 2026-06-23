@@ -7,8 +7,9 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery, ObtenerTodosLosVendedoresQuery } from './queries/vendedor';
 import { CrearDomicilioQuery, ActualizarDomicilioQuery, ObtenerDomicilioQuery } from './queries/domicilio';
 import { PublicarProductoCategoriasQuery, ObtenerCategoriasDeProductosQuery, EditarCategoriasQuery } from './queries/categoria';
-import { ObtenerSubOrdenesQuery, OrdenListaParaRetirarQuery } from './queries/suborden';
+import { ObtenerOrdenesEnPreparacionQuery, ObtenerSubOrdenesQuery, OrdenListaParaRetirarQuery } from './queries/suborden';
 import { EsAdmin } from '../es-admin';
+import { ObtenerProducto } from '../../app/api/queries';
 
 //=======//
 // Tipos //
@@ -30,6 +31,11 @@ export interface ActionResponse<T> {
 export type ProductosPorVendedor = {
     vendedor: Vendedor;
     productos: Producto[];
+};
+
+export type ProductosPorOrden = {
+    orden: number,
+    subOrdenes: { datos: SubOrden, producto: Producto }[]
 };
 
 //============//
@@ -481,6 +487,50 @@ export async function ObtenerVendedor(): Promise<ActionResponse<void> | ActionRe
 // Acciones de ordenes //
 //=====================//
 
+export async function ObtenerProductosPorOrden(): Promise<ActionResponse<void> | ActionResponse<ProductosPorOrden[]>> {
+
+    const userId = await obtenerUserId();
+
+    if (!userId)
+        return ResponseUnauthorized;
+
+    try {
+        const subOrdenesEnPreparacion = await ObtenerOrdenesEnPreparacionQuery(userId);
+
+        const productosIds = subOrdenesEnPreparacion.map((subOrden) => (subOrden.producto_id));
+        const productos = await ObtenerProductosQuery(productosIds);
+
+        const productosPorOrden: ProductosPorOrden[] = []; 
+
+        for (const subOrden of subOrdenesEnPreparacion) {
+
+            if (!productosPorOrden.find(({ orden }) => (orden === subOrden.orden_id))) {
+
+                productosPorOrden.push({ orden: subOrden.orden_id, subOrdenes: [] });
+            }
+
+            productosPorOrden.find(({ orden }) => (orden === subOrden.orden_id))!.subOrdenes.push(
+                {
+                    datos: subOrden,
+                    producto: productos.find((producto) => (producto.producto_id === subOrden.producto_id))!
+                }
+            );
+            
+        }
+
+        return {
+            success: true,
+            error: null,
+            data: productosPorOrden
+        };
+
+    } catch (error) {
+        console.error("Error en action ObtenerProductosPorOrden:", error);
+
+        return ResponseServerError;
+    }
+}
+
 export async function ObtenerSubOrdenes(): Promise<ActionResponse<void> | ActionResponse<SubOrden[]>> {
 
     const userId = await obtenerUserId();
@@ -504,9 +554,9 @@ export async function ObtenerSubOrdenes(): Promise<ActionResponse<void> | Action
     }
 }
 
-export async function OrdenAPrepararHecha(suborden_id: number) {
+export async function OrdenAPrepararHecha(orden_id: number) {
 
-    if (!validarNumero(suborden_id))
+    if (!validarNumero(orden_id))
         return ResponseValidationError;
 
     const userId = await obtenerUserId();
@@ -517,7 +567,7 @@ export async function OrdenAPrepararHecha(suborden_id: number) {
     console.log("llamar a shipping");
 
     try {
-        await OrdenListaParaRetirarQuery(suborden_id);
+        await OrdenListaParaRetirarQuery(orden_id);
 
         revalidatePath("/mis-productos");
 

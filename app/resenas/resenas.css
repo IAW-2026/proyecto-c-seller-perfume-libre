@@ -1,15 +1,15 @@
-
 .div_principal {
     display: flex;
     flex-direction: row;
     align-content: center;
     background-color: var(--color-slate-100);
-    justify-content:space-evenly;
-    align-items:flex-start;
-    gap:10px;
-    flex-wrap:nowrap;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: nowrap;
     margin: 10px;
-    height:stretch;
+    height: stretch;
+    align-content:flex-start;
 }
 
 @media (max-width: 768px) {
@@ -22,6 +22,8 @@
 .resena_fondo {
     background-color: var(--color-slate-300);
     border-radius: 12px;
+    max-height: 80vh;
+    overflow-y:auto;
 }
 
 .div_resena {
@@ -34,11 +36,89 @@
 .titulo_resena {
     text-align: center;
     margin: 10px;
-} 
+}
 
 .puntaje_resena {
     text-align: center;
     margin: 10px;
-    border-bottom-width: 3px;
-    border-color: var(--color-slate-500);
+}
+
+.productos_botones_container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 10px;
+}
+
+.producto_resena_boton {
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-slate-500);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+    .producto_resena_boton:hover {
+        background-color: var(--color-slate-600);
+        transform: translateX(4px);
+    }
+
+    .producto_resena_boton:active {
+        background-color: var(--color-slate-700);
+        transform: translateX(0);
+    }
+
+.resena_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+    padding: 10px;
+    background-color: var(--color-slate-200);
+    border-radius: 8px;
+    gap: 10px;
+}
+
+.resena_boton_volver {
+    border: none;
+    border-radius: 6px;
+    background-color: var(--color-slate-400);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+    .resena_boton_volver:hover:not(:disabled) {
+        background-color: var(--color-slate-500);
+    }
+
+    .resena_boton_volver:disabled {
+        background-color: var(--color-slate-300);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+@media (max-width: 768px) {
+    .resena_header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .titulo_resena {
+        margin: 0;
+        width: 100%;
+    }
+
+    .resena_boton_volver {
+        width: 100%;
+    }
 }

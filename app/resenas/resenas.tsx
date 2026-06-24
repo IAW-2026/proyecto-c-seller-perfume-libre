@@ -3,17 +3,22 @@
 import './resenas.css'
 import ResenasVendedor from './resenas-vendedor';
 import ResenasProductos from './resenas-productos';
-import { ResenaProducto, ResenaVendedor, Resenas } from '../../lib/db/actions';
+import { ResenaProducto, ResenaVendedor } from '../../lib/db/actions';
+import { Producto } from '../../lib/db/schemes';
 
 interface Props {
-    resenas: Resenas;
+    resenasVendedorInicial: ResenaVendedor[];
+    totalPagesVendedor: number;
+    puntajePromedioVendedor: number;
+
+    productos: Producto[];
 }
 
-export default function Resenas({ resenas } : Props) {
+export default function Resenas({ puntajePromedioVendedor, resenasVendedorInicial, totalPagesVendedor, productos} : Props) {
     return (
         <div className = "div_principal">
-            <ResenasVendedor resenasVendedor={resenas.vendedor} puntajeTotalVendedor={resenas.puntajeTotalVendedor} />
-            <ResenasProductos resenasProductos={resenas.producto} />
+            <ResenasVendedor resenasVendedorInicial={resenasVendedorInicial} puntajePromedio={puntajePromedioVendedor} totalPages={totalPagesVendedor} />
+            <ResenasProductos productos={productos} />
         </div>
     )
 }

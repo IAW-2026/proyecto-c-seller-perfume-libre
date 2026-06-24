@@ -34,6 +34,11 @@
 .titulo_resena {
     text-align: center;
     margin: 10px;
+} 
+
+.puntaje_resena {
+    text-align: center;
+    margin: 10px;
     border-bottom-width: 3px;
     border-color: var(--color-slate-500);
 }

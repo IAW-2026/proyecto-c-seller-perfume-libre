@@ -15,42 +15,19 @@ interface Props {
 
 export default function CardOrden({ idOrden, titulo, cantidad, imagen }: Props) {
 
-    const [error, setError] = useState<string | null>(null);
-
     return (
-        <>
-            {error && (
-                <div style={{zIndex:10}} className="modalFondo">
-
-                    <div className="modal">
-
-                        <p style={{ textAlign: "center" }}>{`${error}`}</p>
-
-                        <button
-                            className="modalBoton"
-                            onClick={() => { setError(null); }}
-                        >
-                            OK
-                        </button>
-
-                    </div>
-
-                </div>
-            )}
-
-            <div className={styles.cardOrden}>
-                <div className={styles.contenedorImagen}>
-                    <Image
-                        src={imagen}
-                        alt={titulo}
-                        fill
-                        className={styles.imagen}
-                        sizes="100px"
-                    />
-                </div>
-                <p>{titulo}</p>
-                <p>{`Cantidad: ${cantidad}`}</p>
+        <div className={styles.cardOrden}>
+            <div className={styles.contenedorImagen}>
+                <Image
+                    src={imagen}
+                    alt={titulo}
+                    fill
+                    className={styles.imagen}
+                    sizes="100px"
+                />
             </div>
-        </>
+            <p>{titulo}</p>
+            <p>{`Cantidad: ${cantidad}`}</p>
+        </div>
     );
 }

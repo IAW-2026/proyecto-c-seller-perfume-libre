@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     try {
         const titulo = request.headers.get("titulo");
         const categorias = JSON.parse(request.headers.get("categorias") ?? "[]") as string[];
-        const apiKey = request.headers.get("seller_api_key");
+        const apiKey = request.headers.get("api_key");
         const pagina = request.headers.get("pagina");
         const cantidadPorPagina = request.headers.get("cantidad_pagina");
 

@@ -6,7 +6,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id_p
     try {
         const { id_producto } = await params;
 
-        const apiKey = request.headers.get("seller_api_key");
+        const apiKey = request.headers.get("api_key");
 
         if (!apiKey) {
             return NextResponse.json({ error: "Unauthorized", status: 401 });

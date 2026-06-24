@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
 
     try {
-        const apiKey = request.headers.get("seller_api_key");
+        const apiKey = request.headers.get("api_key");
 
         const body = await request.json();
 
@@ -30,9 +30,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "No se especifica fecha", status: 400 });
         }
 
+        if (typeof fecha_retiro !== 'string') {
+            return NextResponse.json({ error: "Fecha invalida" }, { status: 400 });
+        }
+
         const fechaRetiro = new Date(fecha_retiro);
 
-        if (Number.isNaN(fecha_retiro.getTime())) {
+        if (Number.isNaN(fechaRetiro.getTime())) {
             return NextResponse.json({ error: "Fecha invalida" }, { status: 400 });
         }
 

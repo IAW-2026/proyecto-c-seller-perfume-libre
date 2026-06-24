@@ -10,7 +10,7 @@ interface RequestTypes {
 export async function POST(request: Request) {
 
     try {
-        const apiKey = request.headers.get("seller_api_key");
+        const apiKey = request.headers.get("api_key");
 
         const body: RequestTypes = await request.json();
 

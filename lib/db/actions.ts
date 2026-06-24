@@ -1,7 +1,7 @@
 ﻿'use server'
 
 import { revalidatePath } from 'next/cache';
-import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery, ObtenerTodosLosProductosQuery, HardDeleteProductoQuery } from './queries/producto';
+import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery, ObtenerTodosLosProductosQuery, HardDeleteProductoQuery, ObtenerMisProductosIdsQuery } from './queries/producto';
 import { SubOrden, Producto, Domicilio, Vendedor, EstadoProducto, EstadoSubOrden } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery, ObtenerTodosLosVendedoresQuery } from './queries/vendedor';
@@ -37,6 +37,29 @@ export type ProductosPorOrden = {
     orden: number,
     subOrdenes: { datos: SubOrden, producto: Producto }[]
 };
+
+export interface ResenaVendedor {
+    resena: string;
+    puntaje: number;
+}
+
+export interface ResenaProducto {
+    producto: string;
+    resena: string;
+    puntaje: number;
+};
+
+export interface Resenas {
+    puntajeTotalVendedor: number;  
+    vendedor: ResenaVendedor[];
+    producto: ResenaProducto[];
+}
+
+export interface PaginationData {
+    page: number;
+    totalPages: number;
+    limit: number;
+}
 
 //============//
 // Respuestas //
@@ -242,6 +265,29 @@ export async function ObtenerMisProductos(): Promise<ActionResponse<void> | Acti
 
     try {
         const productos = await ObtenerMisProductosQuery(userId);
+
+        return {
+            success: true,
+            error: null,
+            data: productos
+        };
+    }
+    catch (error) {
+        console.error("Error en action ObtenerMisProductos: ", error);
+
+        return ResponseServerError;
+    }
+}
+
+export async function ObtenerMisProductosIds(): Promise<ActionResponse<void> | ActionResponse<number[]>> {
+
+    const userId = await obtenerUserId();
+
+    if (!userId)
+        return ResponseUnauthorized;
+
+    try {
+        const productos = await ObtenerMisProductosIdsQuery(userId);
 
         return {
             success: true,
@@ -580,8 +626,8 @@ export async function OrdenAPrepararHecha(orden_id: number) {
     }
 }
 
-//===================//
-// Acciones de admin //
+  //===================//
+ // Acciones de admin //
 //===================//
 
 export async function AdminProductosPorVendedor(): Promise<ActionResponse<void> | ActionResponse<{ vendedor: Vendedor, productos: Producto[] }[]>> {
@@ -641,4 +687,151 @@ export async function AdminEliminarProducto(producto_id: number) {
 
         return ResponseServerError;
     }
+}
+
+//======================//
+// Acciones de resenas //
+//====================//
+
+export async function ObtenerResenas(): Promise<ActionResponse<void> | ActionResponse<Resenas>> {
+
+    const mock = false;
+
+    const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
+
+    if (!userId)
+        return ResponseUnauthorized;
+
+    const idsResult = await ObtenerMisProductosIds();
+
+    if (!idsResult.success)
+        return ResponseServerError;
+
+    const ids = mock? [4, 5] : idsResult.data!;
+    const resenas: Resenas = {puntajeTotalVendedor: 0, vendedor: [], producto: [] };
+
+    try {
+
+        const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
+        const responseVendedor = await fetch(`${feedbackAppUrl}/api/resenas/vendedor/${userId}`);
+        const responseVendedorData = await responseVendedor.json();
+
+        resenas.puntajeTotalVendedor = responseVendedorData.promedio_vendedor;
+
+        for (const resena of responseVendedorData.items) {
+            resenas.vendedor.push({ puntaje: resena.calificacion, resena: resena.comentario });
+        }
+
+        for (const id of ids) {
+            const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
+            const responseProductos = await fetch(`${feedbackAppUrl}/api/resenas/producto/${id}`);
+            const responseProductoData = await responseProductos.json();
+
+            for (const resena of responseProductoData.items) {
+                const producto = await ObtenerProductoQuery(id);
+
+                if(producto)
+                    resenas.producto.push({ puntaje: resena.calificacion, resena: resena.comentario, producto: producto.titulo});
+            }
+        }
+
+        return {
+            success: true,
+            error: null,
+            data: resenas
+        };
+
+    } catch (error) {
+        console.error("Error en action ObtenerResenasProductos: ", error);
+
+        return ResponseServerError;
+    }
+}
+
+
+export async function ObtenerResenasVendedor(page: number): Promise<ActionResponse<void> | ActionResponse<{pagination: PaginationData, promedio: number, resenas: ResenaVendedor[]}>> {
+
+    const mock = false;
+
+    const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
+
+    const resenas: ResenaVendedor[] = [];
+
+    if (!userId)
+        return ResponseUnauthorized;
+
+    try {
+
+        const params = new URLSearchParams({ page: String(page) });
+        const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
+        const responseVendedor = await fetch(`${feedbackAppUrl}/api/resenas/vendedor/${userId}?${params.toString()}`);
+        const responseVendedorData = await responseVendedor.json();
+
+        for (const resena of responseVendedorData.items) {
+            resenas.push({ puntaje: resena.calificacion, resena: resena.comentario });
+        }
+
+        return {
+            success: true,
+            error: null,
+            data: {
+                pagination: { page: page, totalPages: responseVendedorData.totalPages, limit: 10}, // limit 10 porque feedback lo hardcodeo, sino tendria que ir en url params
+                promedio: responseVendedorData.promedio_vendedor,
+                resenas: resenas
+            }
+        };
+
+    } catch (error) {
+        console.error("Error en action ObtenerResenasVendedor: ", error);
+
+        return ResponseServerError;
+    }
+}
+
+export async function ObtenerResenasProducto(producto_id : number, page: number): Promise<ActionResponse<void> | ActionResponse<{ pagination: PaginationData, resenas: ResenaProducto[] }>> {
+
+    const mock = false;
+
+    const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
+
+    if (!userId)
+        return ResponseUnauthorized;
+
+    const idsResult = await ObtenerMisProductosIds();
+    const resenas: ResenaProducto[] = [];
+
+    if (!idsResult.success)
+        return ResponseServerError;
+
+    try {
+
+        const params = new URLSearchParams({ page: String(page) });
+        const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
+        const responseProductos = await fetch(`${feedbackAppUrl}/api/resenas/producto/${producto_id}`);
+        const responseProductoData = await responseProductos.json();
+
+        console.log(responseProductoData);
+
+        for (const resena of responseProductoData.items) {
+            const producto = await ObtenerProductoQuery(producto_id);
+
+            if (producto)
+                resenas.push({ puntaje: resena.calificacion, resena: resena.comentario, producto: producto.titulo });
+        }
+
+        return {
+            success: true,
+            error: null,
+            data: {
+                pagination: { limit: 10, page: page, totalPages: responseProductoData.totalPages },
+                resenas: resenas
+            }
+        };
+
+    } catch (error) {
+        console.error("Error en action ObtenerResenasProductos: ", error);
+
+        return ResponseServerError;
+    }
+
 }

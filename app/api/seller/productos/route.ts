@@ -23,10 +23,6 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "Categorias invalidas" }, { status: 400 });
         }
 
-        if (!titulo) {
-            return NextResponse.json({ error: "No hay titulo en el request", status: 400 });
-        }
-
         if (pagina === undefined || pagina === null) {
             return NextResponse.json({ error: "No se especifica pagina", status: 400 });
         }

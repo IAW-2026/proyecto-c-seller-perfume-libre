@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ObtenerProducto } from '../../../queries'
+import { ObtenerProducto, ObtenerVendedor } from '../../../queries'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id_producto: string }> }) {
 
@@ -26,7 +26,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id_p
             return NextResponse.json({ error: "No encontrado" }, { status: 404 });
         }
 
-        return NextResponse.json(producto);
+        const vendedor = await ObtenerVendedor(producto.vendedor_id);
+
+        // problemon de la gran flauta.
+        if (!vendedor)
+            return NextResponse.json({ error: "No existe vendedor asociado al producto" }, { status: 404 });
+
+        return NextResponse.json({ producto: producto, vendedor: vendedor });
 
     } catch (error) {
         console.log("POST api/seller/productos/[id]", error);

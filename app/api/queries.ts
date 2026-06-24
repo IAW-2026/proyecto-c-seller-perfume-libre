@@ -1,12 +1,30 @@
 import { pool } from '@/lib/db/queries/connect';
-import { Producto, EstadoProducto, EstadoSubOrden, SubOrden } from '@/lib/db/schemes';
+import { Producto, EstadoProducto, EstadoSubOrden, SubOrden, Vendedor } from '@/lib/db/schemes';
 
-export async function ObtenerProductosBusqueda(titulo: string, categorias: string[], pagina : number, cantidadPorPagina: number): Promise<Producto[]> {
+export async function ObtenerProductosBusqueda(titulo: string | null, categorias: string[], pagina : number, cantidadPorPagina: number): Promise<Producto[]> {
     const estado: EstadoProducto = 'activo'; 
 
     const offset = (pagina - 1) * cantidadPorPagina;
 
-    const result = await pool.query<Producto>(`
+    if (titulo === null) {
+
+        const result = await pool.query<Producto>(`
+        SELECT DISTINCT p.*
+        FROM producto p 
+        LEFT JOIN categoria c
+        ON c.producto_id = p.producto_id
+        WHERE p.estado = $2
+        AND ( cardinality($1::text[]) = 0 OR LOWER(c.nombre) = ANY($1) )
+        LIMIT $3
+        OFFSET $4`,
+        [categorias, estado, cantidadPorPagina, offset]
+        );
+
+        return result.rows;
+
+    } else {
+
+        const result = await pool.query<Producto>(`
         SELECT DISTINCT p.*
         FROM producto p 
         LEFT JOIN categoria c
@@ -16,15 +34,33 @@ export async function ObtenerProductosBusqueda(titulo: string, categorias: strin
         AND ( cardinality($2::text[]) = 0 OR LOWER(c.nombre) = ANY($2) )
         LIMIT $4
         OFFSET $5`,
-    [titulo, categorias, estado, cantidadPorPagina, offset]
-    );
+        [titulo, categorias, estado, cantidadPorPagina, offset]
+        );
 
-    return result.rows;
+        return result.rows;
+    }
 }
 
-export async function ObtenerCantidadDeResultados(titulo: string, categorias: string[]) {
+export async function ObtenerCantidadDeResultados(titulo: string | null, categorias: string[]) {
+
     const estado: EstadoProducto = 'activo';
-    const result = await pool.query(`
+
+    if (titulo === null) {
+
+        const result = await pool.query(`
+        SELECT COUNT (DISTINCT p.producto_id) AS total
+        FROM producto p 
+        LEFT JOIN categoria c
+        ON c.producto_id = p.producto_id
+        WHERE p.estado = $2
+        AND ( cardinality($1::text[]) = 0 OR LOWER(c.nombre) = ANY($1) )`,
+        [categorias, estado]
+        );
+
+        return Number(result.rows[0].total);
+    } else {
+
+        const result = await pool.query(`
         SELECT COUNT (DISTINCT p.producto_id) AS total
         FROM producto p 
         LEFT JOIN categoria c
@@ -33,9 +69,10 @@ export async function ObtenerCantidadDeResultados(titulo: string, categorias: st
         AND p.estado = $3
         AND ( cardinality($2::text[]) = 0 OR LOWER(c.nombre) = ANY($2) )`,
         [titulo, categorias, estado]
-    );
+        );
 
-    return Number(result.rows[0].total);
+        return Number(result.rows[0].total);
+    }
 }
 
 export async function OrdenEnPreparacion(id_vendedor: string, id_orden: number) {
@@ -87,6 +124,17 @@ export async function ObtenerProducto(producto_id: number) {
         SELECT * FROM producto
         WHERE producto_id = $1`,
         [producto_id]
+    );
+
+    return result.rows[0];
+}
+
+export async function ObtenerVendedor(vendedor_id: string) {
+
+    const result = await pool.query<Vendedor>(`
+        SELECT * FROM vendedor
+        WHERE clerk_id = $1`,
+        [vendedor_id]
     );
 
     return result.rows[0];

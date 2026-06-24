@@ -15,6 +15,18 @@ export async function ObtenerMisProductosQuery(userId: string): Promise<Producto
     return result.rows;
 } 
 
+export async function ObtenerMisProductosIdsQuery(userId: string): Promise<number[]> {
+    const estadoActivo: EstadoProducto = "activo";
+    const estadoPausado: EstadoProducto = "pausado";
+    const result = await pool.query(`
+        SELECT producto_id FROM producto
+        WHERE vendedor_id=$1 AND (estado=$2 or estado=$3)`,
+        [userId, estadoActivo, estadoPausado]
+    );
+
+    return result.rows;
+} 
+
 export async function EditarProductoQuery(producto_id: number, vendedor_id: string, titulo: string, descripcion: string, precio: number, stock: number, estado: EstadoProducto, imagen: string) { 
     await pool.query(`
         UPDATE producto

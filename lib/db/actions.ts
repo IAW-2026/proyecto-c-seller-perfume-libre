@@ -695,7 +695,7 @@ export async function AdminEliminarProducto(producto_id: number) {
 
 export async function ObtenerResenas(): Promise<ActionResponse<void> | ActionResponse<Resenas>> {
 
-    const mock = true;
+    const mock = false;
 
     const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
 
@@ -751,7 +751,7 @@ export async function ObtenerResenas(): Promise<ActionResponse<void> | ActionRes
 
 export async function ObtenerResenasVendedor(page: number): Promise<ActionResponse<void> | ActionResponse<{pagination: PaginationData, promedio: number, resenas: ResenaVendedor[]}>> {
 
-    const mock = true;
+    const mock = false;
 
     const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
 
@@ -790,7 +790,7 @@ export async function ObtenerResenasVendedor(page: number): Promise<ActionRespon
 
 export async function ObtenerResenasProducto(producto_id : number, page: number): Promise<ActionResponse<void> | ActionResponse<{ pagination: PaginationData, resenas: ResenaProducto[] }>> {
 
-    const mock = true;
+    const mock = false;
 
     const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
 

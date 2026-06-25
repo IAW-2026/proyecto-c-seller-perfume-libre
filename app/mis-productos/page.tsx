@@ -23,8 +23,6 @@ function error(error: string) {
 
 export default async function Page() {
 
-    // TOOO: reafactor logica
-
     const { userId } = await auth();
     const user = await currentUser();
 
@@ -77,8 +75,6 @@ export default async function Page() {
     }
 
     const productosPorOrden = productosPorOrdenResult.data!;
-
-    console.log(productosResult);
 
     return (
         <ProductosCliente

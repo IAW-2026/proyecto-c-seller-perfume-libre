@@ -59,6 +59,10 @@ export default function ProductosCliente({ productosIniciales, productosCategori
         setLoading(false);
     };
 
+    const recargarProductos = async () => {
+        await handlePageChange(currentPage);
+    };
+
     return (
         <>
             {cantidadPorPagina > 1 && (
@@ -90,6 +94,7 @@ export default function ProductosCliente({ productosIniciales, productosCategori
                     producto={productoEditando}
                     cerrar={() => setProductoEditando(null)}
                     categoriasDeProducto={productosCategorias[productoEditando.producto_id]}
+                    onGuardar={recargarProductos }
                 />
 
             )}

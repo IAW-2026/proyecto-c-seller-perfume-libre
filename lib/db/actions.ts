@@ -1,7 +1,7 @@
 ﻿'use server'
 
 import { revalidatePath } from 'next/cache';
-import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery, ObtenerTodosLosProductosQuery, HardDeleteProductoQuery, ObtenerMisProductosIdsQuery } from './queries/producto';
+import { EditarProductoQuery, ObtenerMisProductosQuery, PublicarProductoQuery, ObtenerProductosQuery, ObtenerProductoQuery, EliminarProductoQuery, ObtenerTodosLosProductosQuery, HardDeleteProductoQuery, ObtenerMisProductosIdsQuery, ObtenerTodosMisProductosQuery } from './queries/producto';
 import { SubOrden, Producto, Domicilio, Vendedor, EstadoProducto, EstadoSubOrden } from './schemes';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { AsignarDomicilioQuery, ObtenerVendedorQuery, CrearVendedorQuery, ObtenerTodosLosVendedoresQuery } from './queries/vendedor';
@@ -256,7 +256,7 @@ export async function ElminarProducto(producto_id: number) {
     }
 }
 
-export async function ObtenerMisProductos(): Promise<ActionResponse<void> | ActionResponse<Producto[]>> {
+export async function ObtenerMisProductos(page: number, cantidadPorPagina: number): Promise<ActionResponse<void> | ActionResponse<{ pagination: PaginationData, productos: Producto[] }>> {
 
     const userId = await obtenerUserId();
 
@@ -264,7 +264,33 @@ export async function ObtenerMisProductos(): Promise<ActionResponse<void> | Acti
         return ResponseUnauthorized;
 
     try {
-        const productos = await ObtenerMisProductosQuery(userId);
+        const result = await ObtenerMisProductosQuery(userId, page, cantidadPorPagina);
+
+        return {
+            success: true,
+            error: null,
+            data: {
+                pagination: { limit: cantidadPorPagina, page: page, totalPages: result.totalPages },
+                productos: result.productos
+            }
+        };
+    }
+    catch (error) {
+        console.error("Error en action ObtenerMisProductos: ", error);
+
+        return ResponseServerError;
+    }
+}
+
+export async function ObtenerTodosMisProductos(): Promise<ActionResponse<void> | ActionResponse<Producto[]>> {
+
+    const userId = await obtenerUserId();
+
+    if (!userId)
+        return ResponseUnauthorized;
+
+    try {
+        const productos = await ObtenerTodosMisProductosQuery(userId);
 
         return {
             success: true,

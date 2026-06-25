@@ -1,7 +1,7 @@
 ﻿import Resenas from './resenas';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { ObtenerMisProductos, ObtenerMisProductosIds, ObtenerResenas, ObtenerResenasProducto, ObtenerResenasVendedor, ObtenerTodosMisProductos } from '../../lib/db/actions';
+import { ObtenerMisProductos, ObtenerMisProductosIds, ObtenerResenasProducto, ObtenerResenasVendedor, ObtenerTodosMisProductos } from '../../lib/db/actions';
 function error(error: string) {
     return (
         <div className="errorDivFondo">

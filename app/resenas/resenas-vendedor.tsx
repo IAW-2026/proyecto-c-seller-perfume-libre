@@ -4,7 +4,7 @@ import './resenas';
 
 import { useState } from 'react';
 import CardResenasVendedor from './card-resena-vendedor';
-import { ObtenerResenas, ObtenerResenasVendedor, Resenas } from '../../lib/db/actions';
+import { ObtenerResenasVendedor, Resenas } from '../../lib/db/actions';
 import { ResenaVendedor } from '../../lib/db/actions';
 import Pagination from '../pagination';
 import { useAppContext } from '../appContext';

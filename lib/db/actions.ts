@@ -719,62 +719,6 @@ export async function AdminEliminarProducto(producto_id: number) {
 // Acciones de resenas //
 //====================//
 
-export async function ObtenerResenas(): Promise<ActionResponse<void> | ActionResponse<Resenas>> {
-
-    const mock = false;
-
-    const userId = mock ? "user_3EXlfKfNj061hH7lOCEhs7Wg7qy" : await obtenerUserId();
-
-    if (!userId)
-        return ResponseUnauthorized;
-
-    const idsResult = await ObtenerMisProductosIds();
-
-    if (!idsResult.success)
-        return ResponseServerError;
-
-    const ids = mock? [4, 5] : idsResult.data!;
-    const resenas: Resenas = {puntajeTotalVendedor: 0, vendedor: [], producto: [] };
-
-    try {
-
-        const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
-        const responseVendedor = await fetch(`${feedbackAppUrl}/api/resenas/vendedor/${userId}`);
-        const responseVendedorData = await responseVendedor.json();
-
-        resenas.puntajeTotalVendedor = responseVendedorData.promedio_vendedor;
-
-        for (const resena of responseVendedorData.items) {
-            resenas.vendedor.push({ puntaje: resena.calificacion, resena: resena.comentario });
-        }
-
-        for (const id of ids) {
-            const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
-            const responseProductos = await fetch(`${feedbackAppUrl}/api/resenas/producto/${id}`);
-            const responseProductoData = await responseProductos.json();
-
-            for (const resena of responseProductoData.items) {
-                const producto = await ObtenerProductoQuery(id);
-
-                if(producto)
-                    resenas.producto.push({ puntaje: resena.calificacion, resena: resena.comentario, producto: producto.titulo});
-            }
-        }
-
-        return {
-            success: true,
-            error: null,
-            data: resenas
-        };
-
-    } catch (error) {
-        console.error("Error en action ObtenerResenasProductos: ", error);
-
-        return ResponseServerError;
-    }
-}
-
-
 export async function ObtenerResenasVendedor(page: number): Promise<ActionResponse<void> | ActionResponse<{pagination: PaginationData, promedio: number, resenas: ResenaVendedor[]}>> {
 
     const mock = false;
@@ -789,7 +733,7 @@ export async function ObtenerResenasVendedor(page: number): Promise<ActionRespon
     try {
 
         const params = new URLSearchParams({ page: String(page) });
-        const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
+        const feedbackAppUrl = process.env.FEEDBACK_APP;
         const responseVendedor = await fetch(`${feedbackAppUrl}/api/resenas/vendedor/${userId}?${params.toString()}`);
         const responseVendedorData = await responseVendedor.json();
 
@@ -832,7 +776,7 @@ export async function ObtenerResenasProducto(producto_id : number, page: number)
     try {
 
         const params = new URLSearchParams({ page: String(page) });
-        const feedbackAppUrl = "https://proyecto-c-feedback2-perfume-libre.vercel.app";
+        const feedbackAppUrl = process.env.FEEDBACK_APP;
         const responseProductos = await fetch(`${feedbackAppUrl}/api/resenas/producto/${producto_id}`);
         const responseProductoData = await responseProductos.json();
 

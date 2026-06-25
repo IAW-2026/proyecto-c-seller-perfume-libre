@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { Producto, EditarProducto, EditarCategorias } from '@/lib/db/db';
@@ -10,9 +10,10 @@ interface Props {
     producto: Producto;
     cerrar: () => void;
     categoriasDeProducto: string[];
+    onGuardar: () => Promise<void>;
 }
 
-export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: Props) {
+export default function ModalEditar({ producto, categoriasDeProducto, cerrar, onGuardar }: Props) {
 
     const [agregandoCategoria, setAgregandoCategoria] = useState(false);
     const [nuevaCategoria, setNuevaCategoria] = useState("");
@@ -23,6 +24,10 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
     const [categorias, setCategorias] = useState<string[]>(categoriasDeProducto);
     const { abrirModalError } = useAppContext();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [imagen, setImagen] = useState<string>(producto.imagen);
+    const [imagenFile, setImagenFile] = useState<File | null>(null);
+    const [imagenModificada, setImagenModificada] = useState(false);
+
     function ajustarAltura() {
         if (!textareaRef.current) return;
 
@@ -78,25 +83,76 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
         return a.every((valor, index) => valor === b[index]);
     }
 
+    async function subirImagen() {
+        if (!imagenFile)
+            return null;
+
+        const formData = new FormData();
+        formData.append("file", imagenFile);
+
+        try {
+            const response = await fetch("api/seller/subir-imagen", { method: "POST", body: formData });
+
+            if (!response.ok) {
+                abrirModalError("Error al subir la imagen.");
+                return null;
+            }
+
+            const data = await response.json();
+            return data.url;
+
+        } catch (error) {
+            abrirModalError("Error de conexion al subir la imagen.");
+            return null;
+        }
+    }
+
+    async function eliminarImagen (imagen: string) {
+
+        try {
+            const response = await fetch("api/seller/borrar-imagen", { method: "POST", body: JSON.stringify({file: imagen}) });
+
+            if (!response.ok) {
+                abrirModalError("Error al eliminar la imagen.");
+                return null;
+            }
+
+        } catch (error) {
+            abrirModalError("Error de conexion al eliminar la imagen.");
+            return null;
+        }
+    }
+
     async function guardar() {
         if (!verificarInput()) {
             return;
         }
 
-        const result = await EditarProducto(producto.producto_id, producto.vendedor_id, titulo, descripcion, Number(precio), producto.stock + Number(agregarStock), producto.imagen);
+        const url = imagenModificada ? await subirImagen() : producto.imagen;
 
+        if (url === null)
+            return;
+
+        if (imagenModificada) await eliminarImagen(producto.imagen);
+
+        const result = await EditarProducto(producto.producto_id, producto.vendedor_id, titulo, descripcion, Number(precio), producto.stock + Number(agregarStock), url);
+        
         if (result.success) {
             if (!categoriasIguales(categoriasDeProducto, categorias)) {
                 const result2 = await EditarCategorias(producto.producto_id, categorias);
 
                 if (result2.success) {
+                    setImagen(url);
+                    await onGuardar?.(); // AGREGAR ESTA LÍNEA
                     cerrar();
                 } else {
                     abrirModalError(result2.error!.description!);
                 }
+            } else {
+                setImagen(url);
+                await onGuardar?.(); // AGREGAR ESTA LÍNEA
+                cerrar();
             }
-
-            cerrar();
         }
         else {
             abrirModalError(result.error!.description!);
@@ -116,7 +172,7 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                         <div className="modalContenedorImagen">
 
                             <Image
-                                src={producto.imagen}
+                                src={imagen}
                                 alt={producto.titulo}
                                 sizes="100px"
                                 width={100}
@@ -125,6 +181,33 @@ export default function ModalEditar({ producto, categoriasDeProducto, cerrar }: 
                             />
 
                         </div>
+
+                        <label className="modalBoton">
+
+                            Cambiar Imagen
+
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+
+                                    if (!file)
+                                        return;
+
+                                    if (!file.type.startsWith('image/')) {
+                                        abrirModalError("El archivo debe ser una imagen");
+                                        return;
+                                    }
+
+                                    setImagenFile(file);
+                                    setImagen(URL.createObjectURL(file));
+                                    setImagenModificada(true);
+                                }}
+                            />
+
+                        </label>
 
                     </div>
 

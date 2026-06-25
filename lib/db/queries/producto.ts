@@ -3,13 +3,44 @@ import 'server-only'
 import { Producto, EstadoProducto } from '../schemes';
 import { pool } from './connect';
 
-export async function ObtenerMisProductosQuery(userId: string): Promise<Producto[]> {
+export async function ObtenerMisProductosQuery(userId: string, page: number, cantidadPorPagina: number): Promise<{ totalPages: number, productos: Producto[] }> {
+    const estadoActivo: EstadoProducto = "activo";
+    const estadoPausado: EstadoProducto = "pausado";
+
+    const offset = (page - 1) * cantidadPorPagina;
+
+    const resultProductos = await pool.query<Producto>(`
+        SELECT * FROM producto
+        WHERE vendedor_id=$1 AND (estado=$2 or estado=$3)
+        LIMIT $4
+        OFFSET $5`,
+    [userId, estadoActivo, estadoPausado, cantidadPorPagina, offset]
+    );
+
+    const resultTotal = await pool.query(`
+        SELECT COUNT (producto_id) as total
+        FROM producto
+        WHERE vendedor_id=$1 AND (estado=$2 or estado=$3)`,
+        [userId, estadoActivo, estadoPausado]
+    );
+
+    const productos = resultProductos.rows;
+    const total = Number(resultTotal.rows[0].total);
+
+    return {
+        productos: productos,
+        totalPages: Math.ceil(total / cantidadPorPagina)
+    }
+
+} 
+
+export async function ObtenerTodosMisProductosQuery(userId: string): Promise<Producto[]> {
     const estadoActivo: EstadoProducto = "activo";
     const estadoPausado: EstadoProducto = "pausado";
     const result = await pool.query<Producto>(`
         SELECT * FROM producto
         WHERE vendedor_id=$1 AND (estado=$2 or estado=$3)`,
-    [userId, estadoActivo, estadoPausado]
+        [userId, estadoActivo, estadoPausado]
     );
 
     return result.rows;

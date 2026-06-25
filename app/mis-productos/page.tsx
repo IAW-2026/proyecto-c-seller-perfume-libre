@@ -56,12 +56,12 @@ export default async function Page() {
         domicilio = domicilioResult.data!;
     }
 
-    const productosResult = await ObtenerMisProductos();
+    const productosResult = await ObtenerMisProductos(1, 4);
 
     if (!productosResult.success)
         return error(productosResult.error!.description);
 
-    const productos = productosResult.data!;
+    const productos = productosResult.data!.productos;
 
     const productosCategoriasResult = await ObtenerCategoriasDeProductos(productos.map(p => p.producto_id));
 
@@ -78,7 +78,17 @@ export default async function Page() {
 
     const productosPorOrden = productosPorOrdenResult.data!;
 
+    console.log(productosResult);
+
     return (
-        <ProductosCliente productos={productos} forzarIngresarDireccion={forzarIngresarDireccion} domicilio={domicilio!} productosCategorias={productosCategorias} productosPorOrden={productosPorOrden} />
+        <ProductosCliente
+            productosIniciales={productos}
+            forzarIngresarDireccion={forzarIngresarDireccion}
+            domicilio={domicilio!}
+            productosCategoriasIniciales={productosCategorias}
+            productosPorOrden={productosPorOrden}
+            cantidadPorPaginaInicial={productosResult.data!.pagination.limit}
+            totalPages={productosResult.data!.pagination.totalPages }
+        />
     )
 }

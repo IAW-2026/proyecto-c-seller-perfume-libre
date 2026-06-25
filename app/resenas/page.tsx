@@ -1,7 +1,7 @@
 ﻿import Resenas from './resenas';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { ObtenerMisProductos, ObtenerMisProductosIds, ObtenerResenas, ObtenerResenasProducto, ObtenerResenasVendedor } from '../../lib/db/actions';
+import { ObtenerMisProductos, ObtenerMisProductosIds, ObtenerResenas, ObtenerResenasProducto, ObtenerResenasVendedor, ObtenerTodosMisProductos } from '../../lib/db/actions';
 function error(error: string) {
     return (
         <div className="errorDivFondo">
@@ -35,7 +35,7 @@ export default async function Page() {
 
     const resenasVendedor = resultVendedor.data!;
 
-    const result = await ObtenerMisProductos();
+    const result = await ObtenerTodosMisProductos();
 
     if (!result.success)
         return error("Error al obtener informacion");

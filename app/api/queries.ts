@@ -97,13 +97,13 @@ export async function OrdenRetirada(id_orden: number, tracking_id: number, fecha
     );
 }
 
-export async function OrdenAprobada(id_orden: number, id_vendedor: string, productos_id: number[]) {
+export async function OrdenAprobada(id_orden: number, id_vendedor: string, productos_id: number[], cantidad: number) {
     const estado: EstadoSubOrden = "en_preparacion"; 
     for (const id of productos_id) {
         await pool.query(`
             INSERT INTO suborden (orden_id, vendedor_id, producto_id, cantidad, precio, estado)
             VALUES ($1, $2, $3, $4, $5, $6)`,
-        [id_orden, id_vendedor, id, 44, 123, estado]
+        [id_orden, id_vendedor, id, cantidad, (await ObtenerProducto(id)).precio * cantidad, estado]
         );
     }
 }
@@ -138,4 +138,23 @@ export async function ObtenerVendedor(vendedor_id: string) {
     );
 
     return result.rows[0];
+}
+
+export async function ReducirStock(producto_id: number, cantidad: number) {
+
+    const producto = await ObtenerProducto(producto_id);
+
+    if (!producto)
+        return;
+
+    producto.stock -= cantidad;
+
+    const estado: EstadoProducto = producto.stock === 0 ? 'pausado' : 'activo';
+
+    await pool.query(`
+        UPDATE producto
+        SET stock=$2, estado=$3
+        WHERE producto_id=$1`,
+        [producto_id, producto.stock, estado]
+    );
 }

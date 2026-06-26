@@ -11,6 +11,16 @@ Si un producto llega a tener stock cero, este se considera en estado pausado y e
 
 [Link del deploy de Vercel](https://proyecto-c-seller-perfume-libre.vercel.app)
 
+**Usuarios de prueba registrados:**
+
+Usuario vendedor
+Email: seller+clerk_test@iaw.com
+Password: iawuser#
+
+Usuario admin
+Email: seller_admin+clerk_test@iaw.com
+Password: iawuser#
+
 ---
 
 Enunciado completo: <https://iaw-2026.github.io/proyecto/>

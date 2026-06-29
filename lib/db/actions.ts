@@ -636,9 +636,22 @@ export async function OrdenAPrepararHecha(orden_id: number) {
     if (!userId)
         return ResponseUnauthorized;
 
-    console.log("llamar a shipping");
-
     try {
+
+        const response = await fetch(
+            `https://proyecto-c-shipping2-perfume-libre.vercel.app/api/preparacion/${orden_id}`,
+            {
+                method: "POST"
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Error en el reponse de shipping: ", data.mensaje);
+            return ResponseServerError;
+        }
+
         await OrdenListaParaRetirarQuery(orden_id);
 
         revalidatePath("/mis-productos");

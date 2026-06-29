@@ -636,9 +636,17 @@ export async function OrdenAPrepararHecha(orden_id: number) {
     if (!userId)
         return ResponseUnauthorized;
 
-    console.log("llamar a shipping");
-
     try {
+
+        const response = await fetch(`${process.env.SHIPPING_APP}/api/preparacion/${orden_id}`, { method: "POST" });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Error en el reponse de shipping: ", data.mensaje);
+            return ResponseServerError;
+        }
+
         await OrdenListaParaRetirarQuery(orden_id);
 
         revalidatePath("/mis-productos");

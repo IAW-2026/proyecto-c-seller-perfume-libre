@@ -158,3 +158,30 @@ export async function ReducirStock(producto_id: number, cantidad: number) {
         [producto_id, producto.stock, estado]
     );
 }
+
+export async function AnalyticsStatsDeProductos() {
+    const productsResult = await pool.query(`
+      SELECT 
+        COUNT(*) as total_products,
+        SUM(CASE WHEN estado = 'activo' THEN 1 ELSE 0 END) as active_products,
+        SUM(stock) as total_stock
+      FROM producto
+      WHERE estado != 'borrado' `
+    );
+
+    return productsResult.rows[0];
+}
+
+export async function AnalyticsCategoriasTop() {
+    const catResult = await pool.query(`
+      SELECT c.nombre, COUNT(*) as count 
+      FROM categoria c
+      JOIN producto p ON p.producto_id = c.producto_id
+      WHERE p.estado = 'activo'
+      GROUP BY c.nombre
+      ORDER BY count DESC
+      LIMIT 5`
+    );
+
+    return catResult.rows;
+}

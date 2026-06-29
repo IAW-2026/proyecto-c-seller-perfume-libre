@@ -31,16 +31,23 @@ export default function PanelAdmin({ productosPorVendedor }: Props) {
             items.push({ producto_id: seleccion.producto.producto_id, cantidad: seleccion.cantidad });
         }
 
-        await fetch("/api/seller/ordenes/pago-aprobado", {
+        const result = await fetch("/api/seller/ordenes/preparar", {
             method: "POST",
             headers: {
-                "seller_api_key": "sas",
-                "id_orden": `${new Date().getMilliseconds()}`, /* Suficientemente unico para id */
+                "Content-Type": "application/json",
+                "api_key": process.env.SELLER_API_KEY
             },
             body: JSON.stringify({
-                items,
+                id_orden: `${new Date().getMilliseconds()}`, /* Suficientemente unico para id */
+                productos_id: items.map((p) => (p.producto_id)),
+                id_vendedor: "test_orden"
             }),
         });
+
+        const data = await result.json();
+
+        if (!result.ok)
+            abrirModalError(data.error);
 
         setProductosSeleccionados([]);
     }

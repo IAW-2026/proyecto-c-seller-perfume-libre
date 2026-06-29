@@ -638,12 +638,7 @@ export async function OrdenAPrepararHecha(orden_id: number) {
 
     try {
 
-        const response = await fetch(
-            `https://proyecto-c-shipping2-perfume-libre.vercel.app/api/preparacion/${orden_id}`,
-            {
-                method: "POST"
-            }
-        );
+        const response = await fetch(`${process.env.SHIPPING_APP}/api/preparacion/${orden_id}`, { method: "POST" });
 
         const data = await response.json();
 
